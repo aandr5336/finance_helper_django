@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Env
+.env
+*.log
+db.sqlite3
+.idea/
+.vscode/
+*.mwb.bak
+.DS_Store
+staticfiles/
+media/
+.coverage
+htmlcov/
