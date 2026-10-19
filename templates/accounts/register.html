@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Реєстрація · Finance Helper{% endblock %}
+{% block content %}
+<div class="fh-auth-wrap">
+  <div class="fh-auth-card" style="max-width: 480px;">
+    <div class="fh-auth-brand">
+      <i class="bi bi-graph-up-arrow"></i> Finance Helper
+    </div>
+    <h1>Створити акаунт</h1>
+    <p class="auth-sub">Почніть вести бюджет за кілька хвилин</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="text-danger small mb-3">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        <div class="fh-input-with-count">
+          {{ form.username }}
+          <span class="fh-char-count" id="username-count" aria-live="polite">0/150</span>
+        </div>
+        {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors }}</div>{% endif %}
+      </div>
+
+      <button class="btn btn-accent w-100 py-2" type="submit">Зареєструватися</button>
+    </form>
+    <p class="text-center mt-3 mb-0 small text-muted-fh">
+      Вже є акаунт? <a href="{% url 'accounts:login' %}">Увійти</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const input = document.getElementById('id_username');
+  const counter = document.getElementById('username-count');
+  if (!input || !counter) return;
+  const max = Number(input.getAttribute('maxlength') || 150);
+  function update() {
+    const len = (input.value || '').length;
+    counter.textContent = len + '/' + max;
+    counter.classList.toggle('is-near-limit', len >= max * 0.9);
+    counter.classList.toggle('is-over', len > max);
+  }
+  input.addEventListener('input', update);
+  update();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Вхід · Finance Helper{% endblock %}
+{% block content %}
+<div class="fh-auth-wrap">
+  <div class="fh-auth-card">
+    <div class="fh-auth-brand">
+      <i class="bi bi-graph-up-arrow"></i> Finance Helper
+    </div>
+    <h1>Вхід до системи</h1>
+    <p class="auth-sub">Керуйте бюджетом у одному місці</p>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label" for="id_username">Логін</label>
+        <input type="text" name="username" id="id_username" class="form-control" required autofocus
+               value="{{ form.username.value|default:'' }}" placeholder="demo">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="id_password">Пароль</label>
+        <input type="password" name="password" id="id_password" class="form-control" required placeholder="••••••••">
+      </div>
+      <button class="btn btn-accent w-100 py-2" type="submit">
+        Увійти <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+    </form>
+    <div class="divider-fh">або</div>
+    <p class="text-center mb-0 small text-muted-fh">
+      Немає акаунта? <a href="{% url 'accounts:register' %}">Реєстрація</a>
+      · <a href="{% url 'accounts:password_reset' %}">Забули пароль?</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
