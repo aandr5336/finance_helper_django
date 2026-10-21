@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Цілі · Finance Helper{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h1 class="page-title">Фінансові цілі</h1>
+    <p class="page-subtitle">Накопичення та прогрес до мети</p>
+  </div>
+  <a class="btn btn-accent" href="{% url 'budgeting:goal_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати</a>
+</div>
+<div class="row g-3">
+{% for g in goals %}
+  <div class="col-md-6">
+    <a href="{{ g.get_absolute_url }}" class="text-decoration-none text-reset">
+      <div class="card-soft p-3 p-md-4 h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <strong>{{ g.title }}</strong>
+          {% if g.is_done %}<span class="badge text-bg-success">Досягнуто</span>{% endif %}
+        </div>
+        <div class="small text-muted-fh mb-2">{% uah g.saved_amount %} / {% uah g.target_amount %}</div>
+        {% budget_progress_bar g.percent %}
+      </div>
+    </a>
+  </div>
+{% empty %}
+  <div class="col-12"><div class="card-soft p-4 fh-empty">Цілей ще немає. <a href="{% url 'budgeting:goal_create' %}">Створити першу</a></div></div>
+{% endfor %}
+</div>
+{% endblock %}

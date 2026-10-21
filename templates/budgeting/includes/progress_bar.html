@@ -1,0 +1,12 @@
+{% load l10n %}
+<div class="progress fh-progress" style="height: 0.75rem;">
+  <div
+    class="progress-bar {{ bar_class }}"
+    role="progressbar"
+    style="width: {% localize off %}{{ percent }}{% endlocalize %}%;"
+    aria-valuenow="{% localize off %}{{ percent }}{% endlocalize %}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  ></div>
+</div>
+<small class="fh-progress-label">{{ percent|floatformat:0 }}%</small>

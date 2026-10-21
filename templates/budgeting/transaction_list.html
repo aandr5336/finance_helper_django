@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Транзакції · Finance Helper{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h1 class="page-title">Транзакції</h1>
+    <p class="page-subtitle">Доходи, витрати та пошук по історії</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-fh" href="{% url 'budgeting:transaction_calendar' %}"><i class="bi bi-calendar3 me-1"></i>Календар</a>
+    <a class="btn btn-accent" href="{% url 'budgeting:transaction_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати</a>
+  </div>
+</div>
+
+<form method="get" class="card-soft p-3 p-md-4 mb-4">
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3"><label class="form-label">{{ filter_form.q.label }}</label>{{ filter_form.q }}</div>
+    <div class="col-md-2"><label class="form-label">{{ filter_form.tx_type.label }}</label>{{ filter_form.tx_type }}</div>
+    <div class="col-md-2"><label class="form-label">{{ filter_form.date_from.label }}</label>{{ filter_form.date_from }}</div>
+    <div class="col-md-2"><label class="form-label">{{ filter_form.date_to.label }}</label>{{ filter_form.date_to }}</div>
+    <div class="col-md-2"><label class="form-label">{{ filter_form.category.label }}</label>{{ filter_form.category }}</div>
+    <div class="col-md-1"><button class="btn btn-outline-fh w-100" type="submit">OK</button></div>
+  </div>
+  {% if filter_form.non_field_errors %}<div class="text-danger mt-2">{{ filter_form.non_field_errors }}</div>{% endif %}
+</form>
+
+<div class="card-soft p-3 p-md-4">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Дата</th><th>Категорія</th><th>Тип</th><th>Сума</th><th>Примітка</th><th></th></tr></thead>
+      <tbody>
+      {% for t in transactions %}
+        <tr>
+          <td class="text-muted-fh">{{ t.occurred_at }}</td>
+          <td><span class="cat-dot me-1" style="background:{{ t.category.color }}"></span>{{ t.category.name }}</td>
+          <td>{{ t.get_tx_type_display }}</td>
+          <td>
+            <span class="badge {% if t.tx_type == 'expense' %}badge-expense{% else %}badge-income{% endif %}">
+              {% if t.tx_type == 'expense' %}−{% else %}+{% endif %}{% uah t.amount %}
+            </span>
+          </td>
+          <td class="text-muted-fh">{{ t.note|truncatechars:40 }}</td>
+          <td class="text-end"><a href="{% url 'budgeting:transaction_detail' t.pk %}">Деталі</a></td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6">
+            <div class="fh-empty py-4">
+              <p class="mb-2">Поки немає транзакцій або нічого не знайдено за фільтром.</p>
+              <a class="btn btn-sm btn-accent" href="{% url 'budgeting:transaction_create' %}">Додати першу</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'includes/pagination.html' %}
+</div>
+{% endblock %}

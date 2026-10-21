@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Видалення категорії{% endblock %}
+{% block content %}
+<div class="card-soft p-4 col-lg-6">
+  <h1 class="page-title">Видалити «{{ object }}»?</h1>
+  <p class="page-subtitle mb-4">Якщо є транзакції (PROTECT), видалення не вдасться.</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Видалити</button>
+    <a class="btn btn-outline-fh" href="{{ object.get_absolute_url }}">Скасувати</a>
+  </form>
+</div>
+{% endblock %}

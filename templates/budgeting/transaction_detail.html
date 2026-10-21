@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Транзакція #{{ transaction.pk }}{% endblock %}
+{% block content %}
+<div class="card-soft p-4 col-lg-8">
+  <span class="fh-pill mb-2 d-inline-block">{{ transaction.get_tx_type_display }}</span>
+  <h1 class="page-title mb-3">
+    <span class="{% if transaction.tx_type == 'expense' %}text-expense{% else %}text-income{% endif %}">
+      {% if transaction.tx_type == 'expense' %}−{% else %}+{% endif %}{% uah transaction.amount %}
+    </span>
+  </h1>
+  <dl class="row mb-0">
+    <dt class="col-sm-3 text-muted-fh">Категорія</dt>
+    <dd class="col-sm-9"><span class="cat-dot me-1" style="background:{{ transaction.category.color }}"></span><a href="{{ transaction.category.get_absolute_url }}">{{ transaction.category }}</a></dd>
+    <dt class="col-sm-3 text-muted-fh">Дата</dt><dd class="col-sm-9">{{ transaction.occurred_at }}</dd>
+    <dt class="col-sm-3 text-muted-fh">Примітка</dt><dd class="col-sm-9">{{ transaction.note|default:'—' }}</dd>
+    <dt class="col-sm-3 text-muted-fh">Теги</dt>
+    <dd class="col-sm-9">{% for tag in transaction.tags.all %}<span class="fh-pill me-1">{{ tag.name }}</span>{% empty %}—{% endfor %}</dd>
+  </dl>
+  {% if transaction.owner_id == user.id %}
+  <div class="mt-4 d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-primary" href="{% url 'budgeting:transaction_update' transaction.pk %}">Редагувати</a>
+    <a class="btn btn-outline-danger" href="{% url 'budgeting:transaction_delete' transaction.pk %}">Видалити</a>
+    <a class="btn btn-outline-fh" href="{% url 'budgeting:transaction_list' %}">До списку</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

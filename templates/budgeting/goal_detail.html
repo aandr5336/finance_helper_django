@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}{{ goal.title }}{% endblock %}
+{% block content %}
+<div class="card-soft p-4 col-lg-7">
+  <h1 class="page-title">{{ goal.title }}</h1>
+  <p class="page-subtitle mb-3">{{ goal.description|default:'Без опису' }}</p>
+  <p class="mb-2">Накопичено <strong class="text-income">{% uah goal.saved_amount %}</strong> з {% uah goal.target_amount %}
+    <span class="text-muted-fh">(залишилось {% uah goal.remaining %})</span>
+  </p>
+  {% budget_progress_bar goal.percent %}
+  {% if not goal.is_done %}
+  <form method="post" action="{% url 'budgeting:goal_deposit' goal.pk %}" class="row g-2 align-items-end mt-4">
+    {% csrf_token %}
+    <div class="col-md-6">
+      <label class="form-label">{{ deposit_form.amount.label }}</label>
+      {{ deposit_form.amount }}
+    </div>
+    <div class="col-md-auto">
+      <button class="btn btn-accent" type="submit">Поповнити</button>
+    </div>
+  </form>
+  {% endif %}
+  <div class="mt-4 d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-primary" href="{% url 'budgeting:goal_update' goal.pk %}">Редагувати</a>
+    <a class="btn btn-outline-danger" href="{% url 'budgeting:goal_delete' goal.pk %}">Видалити</a>
+  </div>
+</div>
+{% endblock %}

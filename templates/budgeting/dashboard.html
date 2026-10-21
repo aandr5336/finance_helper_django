@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Панель · Finance Helper{% endblock %}
+{% block content %}
+{% if onboarding %}
+<div class="card-soft p-3 p-md-4 mb-4 fh-onboarding">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h2 class="h5 mb-1">Швидкий старт</h2>
+      <p class="small text-muted-fh mb-0">Крок {{ onboarding.done_count }} з {{ onboarding.total }}</p>
+    </div>
+    <form method="post" action="{% url 'accounts:dismiss_onboarding' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-fh">Приховати</button>
+    </form>
+  </div>
+  <div class="fh-onboarding-steps">
+    {% for step in onboarding.steps %}
+    <a class="fh-onboarding-step {% if step.done %}is-done{% endif %}" href="{% url step.url_name %}">
+      <i class="bi {% if step.done %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
+      <span>{{ step.title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <span class="fh-pill mb-2 d-inline-block">Огляд місяця</span>
+    <h1 class="page-title">Привіт, {{ user.username }}</h1>
+    <p class="page-subtitle">Фінансовий зріз за {{ month_label }} · <a href="{% url 'budgeting:reports' %}?month={{ month_label }}">Звіт</a> · <a href="{% url 'budgeting:insights' %}">Підказки</a></p>
+  </div>
+  <a class="btn btn-accent" href="{% url 'budgeting:transaction_create' %}">
+    <i class="bi bi-plus-lg me-1"></i> Транзакція
+  </a>
+</div>
+
+<div class="fh-card-hero mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+      <div class="stat-label">Баланс місяця</div>
+      <div class="stat-value stat-value--lg {% if balance >= 0 %}text-income{% else %}text-expense{% endif %}">
+        {% uah balance %}
+      </div>
+    </div>
+    <span class="fh-pill">{{ month_label }}</span>
+  </div>
+  <div class="d-flex flex-wrap align-items-center gap-4">
+    <div>
+      <div class="d-flex align-items-center gap-1 text-muted-fh small mb-1">
+        <i class="bi bi-arrow-up text-income"></i> Дохід
+      </div>
+      <div class="fw-semibold text-income">{% uah income %}</div>
+    </div>
+    <div class="fh-split d-none d-sm-block"></div>
+    <div>
+      <div class="d-flex align-items-center gap-1 text-muted-fh small mb-1">
+        <i class="bi bi-arrow-down text-expense"></i> Витрати
+      </div>
+      <div class="fw-semibold text-expense">{% uah expenses %}</div>
+    </div>
+    <div class="fh-split d-none d-sm-block"></div>
+    <div>
+      <div class="text-muted-fh small mb-1">Норма заощаджень</div>
+      <div class="fw-semibold" style="color: var(--fh-orange-300);">{{ savings_rate|floatformat:1 }}%</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-soft p-3 p-md-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Останні транзакції</h2>
+        <a class="small" href="{% url 'budgeting:transaction_list' %}">Усі →</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr><th>Дата</th><th>Категорія</th><th>Сума</th></tr>
+          </thead>
+          <tbody>
+          {% for t in recent %}
+            <tr>
+              <td class="text-muted-fh">{{ t.occurred_at }}</td>
+              <td>
+                <span class="cat-dot me-1" style="background:{{ t.category.color }}"></span>
+                <a href="{{ t.get_absolute_url }}">{{ t.category.name }}</a>
+              </td>
+              <td>
+                <span class="badge {% if t.tx_type == 'expense' %}badge-expense{% else %}badge-income{% endif %}">
+                  {% if t.tx_type == 'expense' %}−{% else %}+{% endif %}{% uah t.amount %}
+                </span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-muted-fh">Поки немає транзакцій — додайте першу.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-soft p-3 p-md-4 mb-4">
+      <h2 class="h5 mb-3">Витрати за категоріями</h2>
+      {% for row in by_category %}
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="d-flex align-items-center gap-2">
+            <span class="cat-dot" style="background:{{ row.category__color }}"></span>
+            {{ row.category__name }}
+          </span>
+          <strong>{% uah row.total %}</strong>
+        </div>
+      {% empty %}
+        <p class="text-muted-fh mb-0">Немає витрат цього місяця</p>
+      {% endfor %}
+    </div>
+    <div class="card-soft p-3 p-md-4">
+      <div class="d-flex justify-content-between mb-3">
+        <h2 class="h5 mb-0">Бюджети</h2>
+        <a class="small" href="{% url 'budgeting:budget_list' %}">Усі →</a>
+      </div>
+      {% for b in budgets %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between small mb-1">
+            <span>{{ b.category.name }}</span>
+            <span class="text-muted-fh">{% uah b.spent %} / {% uah b.amount %}</span>
+          </div>
+          {% budget_progress_bar b.percent over=b.is_over %}
+        </div>
+      {% empty %}
+        <p class="text-muted-fh mb-0">Бюджети ще не задані</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if goals %}
+<div class="card-soft p-3 p-md-4 mt-4">
+  <div class="d-flex justify-content-between mb-3">
+    <h2 class="h5 mb-0">Активні цілі</h2>
+    <a class="small" href="{% url 'budgeting:goal_list' %}">Усі →</a>
+  </div>
+  <div class="row g-3">
+    {% for g in goals %}
+    <div class="col-md-4">
+      <a href="{{ g.get_absolute_url }}" class="text-decoration-none text-reset d-block">
+        <div class="fw-semibold mb-1">{{ g.title }}</div>
+        <div class="small text-muted-fh mb-2">{% uah g.saved_amount %} / {% uah g.target_amount %}</div>
+        {% budget_progress_bar g.percent %}
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

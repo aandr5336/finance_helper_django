@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block content %}
+<div class="card-soft p-4">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="cat-dot" style="width:14px;height:14px;background:{{ category.color }}"></span>
+    <h1 class="page-title mb-0">{{ category.name }}</h1>
+  </div>
+  <p class="page-subtitle">{{ category.get_category_type_display }} · {{ category.icon }}</p>
+  <div class="d-flex gap-2 mb-4 flex-wrap">
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'budgeting:category_update' category.pk %}">Редагувати</a>
+    <a class="btn btn-outline-danger btn-sm" href="{% url 'budgeting:category_delete' category.pk %}">Видалити</a>
+  </div>
+  <h2 class="h5 mb-3">Останні транзакції</h2>
+  <ul class="list-group list-group-flush">
+    {% for t in transactions %}
+      <li class="list-group-item d-flex justify-content-between px-0">
+        <a href="{{ t.get_absolute_url }}">{{ t.occurred_at }}</a>
+        <span>{{ t.amount }}</span>
+      </li>
+    {% empty %}
+      <li class="list-group-item text-muted-fh px-0">Порожньо</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

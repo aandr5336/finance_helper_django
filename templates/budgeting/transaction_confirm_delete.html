@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Видалення транзакції{% endblock %}
+{% block content %}
+<div class="card-soft p-4 col-lg-6">
+  <h1 class="page-title">Видалити транзакцію?</h1>
+  <p class="page-subtitle mb-4">{{ object }} від {{ object.occurred_at }}</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Так, видалити</button>
+    <a class="btn btn-outline-fh" href="{{ object.get_absolute_url }}">Скасувати</a>
+  </form>
+</div>
+{% endblock %}

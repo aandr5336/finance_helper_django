@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Календар · Finance Helper{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h1 class="page-title">Календар</h1>
+    <p class="page-subtitle">Операції по днях місяця</p>
+  </div>
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ prev_label }}">←</a>
+    <span class="fh-pill">{{ month_label }}</span>
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ next_label }}">→</a>
+    <a class="btn btn-accent btn-sm" href="{% url 'budgeting:transaction_list' %}">Список</a>
+  </div>
+</div>
+
+<div class="card-soft p-2 p-md-3">
+  <div class="fh-cal-head">
+    {% for name in weekday_names %}<div>{{ name }}</div>{% endfor %}
+  </div>
+  {% for week in weeks %}
+  <div class="fh-cal-week">
+    {% for day in week %}
+    <div class="fh-cal-day {% if not day.in_month %}is-out{% endif %} {% if day.info %}has-data{% endif %}">
+      <div class="fh-cal-num">{{ day.date.day }}</div>
+      {% if day.in_month and day.info %}
+      <div class="fh-cal-meta text-income">+{% uah day.info.income %}</div>
+      <div class="fh-cal-meta text-expense">−{% uah day.info.expenses %}</div>
+      <a class="fh-cal-link" href="{% url 'budgeting:transaction_list' %}?date_from={{ day.date|date:'Y-m-d' }}&date_to={{ day.date|date:'Y-m-d' }}">{{ day.info.count }}</a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Бюджет {{ budget.category.name }}{% endblock %}
+{% block content %}
+<div class="card-soft p-4 col-lg-7">
+  <span class="fh-pill mb-2 d-inline-block">{{ budget.month|date:'Y-m' }}</span>
+  <h1 class="page-title">{{ budget.category.name }}</h1>
+  <p class="page-subtitle mb-3">Ліміт {% uah budget.amount %} · витрачено {% uah budget.spent %} · залишок {% uah budget.remaining %}</p>
+  {% budget_progress_bar budget.percent over=budget.is_over %}
+  <div class="mt-4 d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-primary" href="{% url 'budgeting:budget_update' budget.pk %}">Редагувати</a>
+    <a class="btn btn-outline-danger" href="{% url 'budgeting:budget_delete' budget.pk %}">Видалити</a>
+  </div>
+</div>
+{% endblock %}
