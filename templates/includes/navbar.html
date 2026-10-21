@@ -1,0 +1,88 @@
+<nav class="navbar navbar-expand-lg fh-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="{% if user.is_authenticated %}{% url 'budgeting:dashboard' %}{% else %}{% url 'budgeting:home' %}{% endif %}">
+      <span class="brand-icon"><i class="bi bi-graph-up-arrow"></i></span>
+      Finance Helper
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Меню">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      {% if user.is_authenticated %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'dashboard' %}active{% endif %}" href="{% url 'budgeting:dashboard' %}">
+            <i class="bi bi-speedometer2 me-1"></i>Дашборд
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'transactions' %}active{% endif %}" href="{% url 'budgeting:transaction_list' %}">
+            <i class="bi bi-arrow-left-right me-1"></i>Транзакції
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'categories' %}active{% endif %}" href="{% url 'budgeting:category_list' %}">
+            <i class="bi bi-tags me-1"></i>Категорії
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'budgets' %}active{% endif %}" href="{% url 'budgeting:budget_list' %}">
+            <i class="bi bi-wallet2 me-1"></i>Бюджети
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'goals' %}active{% endif %}" href="{% url 'budgeting:goal_list' %}">
+            <i class="bi bi-bullseye me-1"></i>Цілі
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'reports' %}active{% endif %}" href="{% url 'budgeting:reports' %}">
+            <i class="bi bi-bar-chart-line me-1"></i>Звіти
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'insights' %}active{% endif %}" href="{% url 'budgeting:insights' %}">
+            <i class="bi bi-lightbulb me-1"></i>Підказки
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'help' %}active{% endif %}" href="{% url 'budgeting:help_index' %}">
+            <i class="bi bi-question-circle me-1"></i>Довідка
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'settings' %}active{% endif %}" href="{% url 'accounts:settings' %}">
+            <i class="bi bi-gear me-1"></i>Налаштування
+          </a>
+        </li>
+        {% if perms.budgeting.can_view_all_transactions %}
+        <li class="nav-item">
+          <a class="nav-link {% if nav_section == 'overview' %}active{% endif %}" href="{% url 'budgeting:system_overview' %}">
+            <i class="bi bi-shield-check me-1"></i>Огляд
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="user-chip"><i class="bi bi-person-fill me-1"></i>{{ user.username }} · {{ display_currency }}</span>
+        <a class="btn btn-sm btn-ghost {% if nav_section == 'settings' %}active{% endif %}" href="{% url 'accounts:settings' %}">Профіль</a>
+        <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-logout">Вийти</button>
+        </form>
+      </div>
+      {% else %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'budgeting:home' %}#features">Можливості</a></li>
+        <li class="nav-item"><a class="nav-link {% if nav_section == 'about' %}active{% endif %}" href="{% url 'sitepages:about' %}">Про нас</a></li>
+        <li class="nav-item"><a class="nav-link {% if nav_section == 'pricing' %}active{% endif %}" href="{% url 'sitepages:pricing' %}">Тарифи</a></li>
+        <li class="nav-item"><a class="nav-link {% if nav_section == 'faq' %}active{% endif %}" href="{% url 'sitepages:faq' %}">FAQ</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2 flex-wrap ms-lg-2">
+        <a class="nav-link {% if nav_section == 'login' %}active{% endif %}" href="{% url 'accounts:login' %}">Увійти</a>
+        <a class="btn btn-sm btn-ghost" href="{% url 'accounts:register' %}">Реєстрація</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
