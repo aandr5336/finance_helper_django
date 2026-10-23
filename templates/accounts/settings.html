@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Налаштування · Finance Helper{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <span class="fh-pill mb-2 d-inline-block">Профіль</span>
+  <h1 class="page-title">Налаштування</h1>
+  <p class="page-subtitle">Акаунт, валюта та курси з API ПриватБанку</p>
+</div>
+
+<div class="fh-card-hero mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="brand-icon" style="width:56px;height:56px;font-size:1.5rem;background:rgba(255,167,38,.15);color:var(--fh-orange-400);">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    <div>
+      <div class="fw-bold fs-5">{{ user.username }}</div>
+      <div class="text-muted-fh">{{ user.email|default:'Email не вказано' }}</div>
+      <div class="small mt-1" style="color:var(--fh-orange-300);">
+        Валюта: {{ profile.get_preferred_currency_display }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-soft p-3 p-md-4 mb-4">
+      <div class="text-muted-fh small text-uppercase mb-3" style="letter-spacing:.06em;">Загальні</div>
+
+      <a class="fh-setting-row text-decoration-none" href="{% url 'accounts:password_change' %}">
+        <span class="fh-setting-icon"><i class="bi bi-lock"></i></span>
+        <span class="flex-grow-1">
+          <span class="d-block text-white">Змінити пароль</span>
+          <span class="small text-muted-fh">Безпека акаунта</span>
+        </span>
+        <i class="bi bi-chevron-right text-muted-fh"></i>
+      </a>
+
+      <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="fh-setting-row w-100 text-start border-0 bg-transparent">
+          <span class="fh-setting-icon"><i class="bi bi-box-arrow-right"></i></span>
+          <span class="flex-grow-1">
+            <span class="d-block text-white">Вийти з акаунту</span>
+            <span class="small text-muted-fh">Завершити сесію</span>
+          </span>
+          <i class="bi bi-chevron-right text-muted-fh"></i>
+        </button>
+      </form>
+
+      <button type="button" class="fh-setting-row w-100 text-start border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <span class="fh-setting-icon" style="color:var(--fh-red);background:rgba(239,83,80,.12);"><i class="bi bi-trash"></i></span>
+        <span class="flex-grow-1">
+          <span class="d-block text-white">Видалити акаунт</span>
+          <span class="small text-muted-fh">Незворотна дія</span>
+        </span>
+        <i class="bi bi-chevron-right text-muted-fh"></i>
+      </button>
+    </div>
+
+    <div class="card-soft p-3 p-md-4">
+      <div class="text-muted-fh small text-uppercase mb-3" style="letter-spacing:.06em;">Email</div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="email">
+        <div class="mb-3">
+          <label class="form-label">{{ email_form.email.label }}</label>
+          {{ email_form.email }}
+          {% if email_form.email.errors %}<div class="text-danger small">{{ email_form.email.errors }}</div>{% endif %}
+        </div>
+        <button class="btn btn-accent" type="submit">Зберегти email</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card-soft p-3 p-md-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="text-muted-fh small text-uppercase mb-0" style="letter-spacing:.06em;">Валюта відображення</div>
+        <span class="fh-pill">{{ profile.preferred_currency }}</span>
+      </div>
+      <p class="small text-muted-fh mb-3">
+        Суми в базі зберігаються в гривнях. Обрана валюта лише змінює відображення (конвертація за курсом НБУ / продажу ПриватБанку).
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="currency">
+        <div class="mb-3">
+          <label class="form-label" for="{{ currency_form.preferred_currency.id_for_label }}">Основна валюта</label>
+          {{ currency_form.preferred_currency }}
+        </div>
+        <button class="btn btn-accent" type="submit">Зберегти валюту</button>
+      </form>
+    </div>
+
+    <div class="card-soft p-3 p-md-4">
+      <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
+        <div>
+          <div class="text-muted-fh small text-uppercase mb-1" style="letter-spacing:.06em;">Курси валют (API)</div>
+          <div class="small text-muted-fh">
+            Джерело:
+            {% if rates_source == 'fallback' %}
+              резервні значення
+            {% else %}
+              {{ rates_source }}
+            {% endif %}
+            {% if rates_fetched_at %} · оновлено о {{ rates_fetched_at }}{% endif %}
+            {% if rates_next_refresh_at %} · наступне оновлення о {{ rates_next_refresh_at }}{% endif %}
+          </div>
+        </div>
+        <form method="post" class="m-0">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="refresh_rates">
+          <button class="btn btn-sm btn-outline-fh" type="submit"><i class="bi bi-arrow-clockwise"></i> Оновити</button>
+        </form>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table mb-0" id="rates-table">
+          <thead>
+            <tr><th>Валюта</th><th>Середній</th><th>Купівля</th><th>Продаж</th></tr>
+          </thead>
+          <tbody>
+          {% for code, row in exchange_rates.items %}
+            <tr class="rates-row{% if forloop.counter > 4 %} rates-row--extra d-none{% endif %}">
+              <td>
+                <strong>{{ code }}</strong>
+                <div class="small text-muted-fh">{{ row.name }}</div>
+              </td>
+              <td style="color:var(--fh-orange-300);">₴{{ row.rate }}</td>
+              <td class="text-income">₴{{ row.buy }}</td>
+              <td>₴{{ row.sale }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if exchange_rates|length > 4 %}
+      <div class="text-center mt-2">
+        <button type="button" class="btn btn-sm btn-outline-fh" id="rates-toggle" aria-expanded="false">
+          Показати всі валюти ({{ exchange_rates|length }})
+        </button>
+      </div>
+      {% endif %}
+      <p class="small text-muted-fh mt-3 mb-0">
+        Курси кешуються на 30 хвилин — оновлення сторінки не змінює значення в межах цього часу.
+        Примусове оновлення — кнопкою «Оновити». Якщо API недоступні, показується останній вдалий знімок (до 24 год).
+        Купівля/продаж: ПриватБанк і Monobank; якщо банку немає пари — оцінка ±0.8% від середнього курсу.
+        Приклади: 1000 ₴ ≈ {% money 1000 'USD' %} · {% money 1000 'EUR' %} · {% money 1000 'PLN' %}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1a1a;color:#fff;border:1px solid rgba(255,255,255,.12);">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Видалити акаунт?</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-muted-fh">
+        Усі ваші категорії, транзакції, бюджети й цілі буде видалено назавжди. Цю дію не можна скасувати.
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-outline-fh" data-bs-dismiss="modal">Скасувати</button>
+        <form method="post" action="{% url 'accounts:delete_account' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Видалити</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const btn = document.getElementById('rates-toggle');
+  if (!btn) return;
+  const extras = document.querySelectorAll('.rates-row--extra');
+  const total = {{ exchange_rates|length }};
+  btn.addEventListener('click', function () {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    extras.forEach(function (row) {
+      row.classList.toggle('d-none', expanded);
+    });
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    btn.textContent = expanded
+      ? ('Показати всі валюти (' + total + ')')
+      : 'Згорнути';
+  });
+})();
+</script>
+{% endblock %}

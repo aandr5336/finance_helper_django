@@ -1,0 +1,8 @@
+<nav class="card-soft p-3 fh-side-nav sticky-lg-top mb-4 mb-lg-0" style="top:1rem;">
+  <div class="text-muted-fh small text-uppercase mb-2" style="letter-spacing:.06em;">Налаштування</div>
+  <a class="fh-side-link {% if settings_section == 'hub' %}active{% endif %}" href="{% url 'accounts:settings' %}">Огляд</a>
+  <a class="fh-side-link {% if settings_section == 'profile' %}active{% endif %}" href="{% url 'accounts:settings_profile' %}">Профіль</a>
+  <a class="fh-side-link {% if settings_section == 'currency' %}active{% endif %}" href="{% url 'accounts:settings_currency' %}">Валюта і курси</a>
+  <a class="fh-side-link {% if settings_section == 'security' %}active{% endif %}" href="{% url 'accounts:settings_security' %}">Безпека</a>
+  <a class="fh-side-link {% if settings_section == 'data' %}active{% endif %}" href="{% url 'accounts:settings_data' %}">Дані</a>
+</nav>

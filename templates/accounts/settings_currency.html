@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Валюта · Налаштування{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h1 class="page-title">Валюта і курси</h1>
+  <p class="page-subtitle">Відображення сум та таблиця FX</p>
+</div>
+<div class="row g-4">
+  <aside class="col-lg-3">{% include 'accounts/includes/settings_nav.html' %}</aside>
+  <div class="col-lg-9">
+    <div class="card-soft p-3 p-md-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="text-muted-fh small text-uppercase mb-0" style="letter-spacing:.06em;">Валюта відображення</div>
+        <span class="fh-pill">{{ profile.preferred_currency }}</span>
+      </div>
+      <p class="small text-muted-fh mb-3">
+        Суми в базі — у гривнях. Обрана валюта лише змінює відображення.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="currency">
+        <div class="mb-3">
+          <label class="form-label" for="{{ currency_form.preferred_currency.id_for_label }}">Основна валюта</label>
+          {{ currency_form.preferred_currency }}
+        </div>
+        <button class="btn btn-accent" type="submit">Зберегти валюту</button>
+      </form>
+    </div>
+
+    <div class="card-soft p-3 p-md-4">
+      <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
+        <div>
+          <div class="text-muted-fh small text-uppercase mb-1" style="letter-spacing:.06em;">Курси валют (API)</div>
+          <div class="small text-muted-fh">
+            Джерело:
+            {% if rates_source == 'fallback' %}резервні значення{% else %}{{ rates_source }}{% endif %}
+            {% if rates_fetched_at %} · оновлено о {{ rates_fetched_at }}{% endif %}
+            {% if rates_next_refresh_at %} · наступне оновлення о {{ rates_next_refresh_at }}{% endif %}
+          </div>
+        </div>
+        <form method="post" class="m-0">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="refresh_rates">
+          <button class="btn btn-sm btn-outline-fh" type="submit"><i class="bi bi-arrow-clockwise"></i> Оновити</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0" id="rates-table">
+          <thead>
+            <tr><th>Валюта</th><th>Середній</th><th>Купівля</th><th>Продаж</th></tr>
+          </thead>
+          <tbody>
+          {% for code, row in exchange_rates.items %}
+            <tr class="rates-row{% if forloop.counter > 4 %} rates-row--extra d-none{% endif %}">
+              <td>
+                <strong>{{ code }}</strong>
+                <div class="small text-muted-fh">{{ row.name }}</div>
+              </td>
+              <td style="color:var(--fh-orange-300);">₴{{ row.rate }}</td>
+              <td class="text-income">₴{{ row.buy }}</td>
+              <td>₴{{ row.sale }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if exchange_rates|length > 4 %}
+      <div class="text-center mt-2">
+        <button type="button" class="btn btn-sm btn-outline-fh" id="rates-toggle" aria-expanded="false">
+          Показати всі валюти ({{ exchange_rates|length }})
+        </button>
+      </div>
+      {% endif %}
+      <p class="small text-muted-fh mt-3 mb-0">
+        Кеш 30 хв. Приклади: 1000 ₴ ≈ {% money 1000 'USD' %} · {% money 1000 'EUR' %} · {% money 1000 'PLN' %}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function () {
+  const btn = document.getElementById('rates-toggle');
+  if (!btn) return;
+  const extras = document.querySelectorAll('.rates-row--extra');
+  const total = {{ exchange_rates|length }};
+  btn.addEventListener('click', function () {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    extras.forEach(function (row) { row.classList.toggle('d-none', expanded); });
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    btn.textContent = expanded ? ('Показати всі валюти (' + total + ')') : 'Згорнути';
+  });
+})();
+</script>
+{% endblock %}

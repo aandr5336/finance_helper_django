@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Налаштування · Finance Helper{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <span class="fh-pill mb-2 d-inline-block">Акаунт</span>
+  <h1 class="page-title">Налаштування</h1>
+  <p class="page-subtitle">Оберіть розділ — профіль, валюта, безпека чи дані</p>
+</div>
+<div class="row g-4">
+  <aside class="col-lg-3">{% include 'accounts/includes/settings_nav.html' %}</aside>
+  <div class="col-lg-9">
+    <div class="fh-card-hero mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="brand-icon" style="width:56px;height:56px;font-size:1.5rem;background:rgba(255,167,38,.15);color:var(--fh-orange-400);">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <div>
+          <div class="fw-bold fs-5">{{ user.username }}</div>
+          <div class="text-muted-fh">{{ user.email|default:'Email не вказано' }}</div>
+          <div class="small mt-1" style="color:var(--fh-orange-300);">Валюта: {{ profile.get_preferred_currency_display }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_profile' %}">
+          <div class="fw-semibold text-white mb-1"><i class="bi bi-person me-2"></i>Профіль</div>
+          <div class="small text-muted-fh">Email і основні дані акаунта</div>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_currency' %}">
+          <div class="fw-semibold text-white mb-1"><i class="bi bi-currency-exchange me-2"></i>Валюта і курси</div>
+          <div class="small text-muted-fh">Відображення сум і таблиця FX</div>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_security' %}">
+          <div class="fw-semibold text-white mb-1"><i class="bi bi-shield-lock me-2"></i>Безпека</div>
+          <div class="small text-muted-fh">Пароль і сесія</div>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_data' %}">
+          <div class="fw-semibold text-white mb-1"><i class="bi bi-database me-2"></i>Дані</div>
+          <div class="small text-muted-fh">Експорт CSV та видалення акаунта</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

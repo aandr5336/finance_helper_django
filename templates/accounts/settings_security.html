@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Безпека · Налаштування{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h1 class="page-title">Безпека</h1>
+  <p class="page-subtitle">Пароль і керування сесією</p>
+</div>
+<div class="row g-4">
+  <aside class="col-lg-3">{% include 'accounts/includes/settings_nav.html' %}</aside>
+  <div class="col-lg-9">
+    <div class="card-soft p-3 p-md-4">
+      <a class="fh-setting-row text-decoration-none" href="{% url 'accounts:password_change' %}">
+        <span class="fh-setting-icon"><i class="bi bi-lock"></i></span>
+        <span class="flex-grow-1">
+          <span class="d-block text-white">Змінити пароль</span>
+          <span class="small text-muted-fh">Рекомендуємо оновлювати періодично</span>
+        </span>
+        <i class="bi bi-chevron-right text-muted-fh"></i>
+      </a>
+      <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="fh-setting-row w-100 text-start border-0 bg-transparent">
+          <span class="fh-setting-icon"><i class="bi bi-box-arrow-right"></i></span>
+          <span class="flex-grow-1">
+            <span class="d-block text-white">Вийти з акаунту</span>
+            <span class="small text-muted-fh">Завершити поточну сесію</span>
+          </span>
+          <i class="bi bi-chevron-right text-muted-fh"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
