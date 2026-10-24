@@ -1,0 +1,25 @@
+{% extends 'sitepages/base_public.html' %}
+{% block public_body %}
+<p class="page-subtitle mb-4">Напишіть нам — відповімо в розумні строки</p>
+{% if contact_sent %}
+<div class="alert alert-success">Дякуємо! Повідомлення прийнято (демо-режим без SMTP).</div>
+{% endif %}
+<form method="post" class="col-lg-8 px-0">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label" for="c-name">Імʼя</label>
+    <input class="form-control" id="c-name" name="name" required maxlength="100"
+           value="{{ user.get_full_name|default:user.username|default:'' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="c-email">Email</label>
+    <input class="form-control" type="email" id="c-email" name="email" required
+           value="{{ user.email|default:'' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="c-msg">Повідомлення</label>
+    <textarea class="form-control" id="c-msg" name="message" rows="5" required maxlength="2000"></textarea>
+  </div>
+  <button class="btn btn-accent" type="submit">Надіслати</button>
+</form>
+{% endblock %}

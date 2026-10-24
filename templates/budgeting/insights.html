@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Підказки · Finance Helper{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h1 class="page-title">Підказки</h1>
+  <p class="page-subtitle">Прості сигнали за вашими даними — без складного ML</p>
+</div>
+<div class="row g-3">
+  {% for tip in tips %}
+  <div class="col-md-6">
+    <div class="card-soft p-3 p-md-4 h-100 fh-insight fh-insight--{{ tip.level }}">
+      <h2 class="h5 mb-2">{{ tip.title }}</h2>
+      <p class="text-muted-fh mb-3">{{ tip.text }}</p>
+      {% if tip.url_pk %}
+      <a class="small" href="{% url tip.url_name tip.url_pk %}">Відкрити →</a>
+      {% else %}
+      <a class="small" href="{% url tip.url_name %}">Відкрити →</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

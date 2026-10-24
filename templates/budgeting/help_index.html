@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Довідка · Finance Helper{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h1 class="page-title">Довідка</h1>
+  <p class="page-subtitle">Короткі гайди українською</p>
+</div>
+<div class="row g-3">
+  {% for a in articles %}
+  <div class="col-md-6">
+    <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'budgeting:help_article' a.slug %}">
+      <div class="fw-semibold text-white mb-1">{{ a.title }}</div>
+      <div class="small text-muted-fh">Читати →</div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+<p class="mt-4 mb-0">
+  <a href="{% url 'sitepages:faq' %}">Публічний FAQ</a> ·
+  <a href="{% url 'sitepages:contact' %}">Контакти</a>
+</p>
+{% endblock %}

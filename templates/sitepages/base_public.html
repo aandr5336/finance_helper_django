@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} · Finance Helper{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <aside class="col-lg-3">
+    <nav class="card-soft p-3 fh-side-nav sticky-lg-top" style="top:1rem;">
+      <div class="text-muted-fh small text-uppercase mb-2" style="letter-spacing:.06em;">Інформація</div>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'sitepages:about' %}">Про нас</a>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'pricing' %}active{% endif %}" href="{% url 'sitepages:pricing' %}">Тарифи</a>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}" href="{% url 'sitepages:faq' %}">FAQ</a>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'changelog' %}active{% endif %}" href="{% url 'sitepages:changelog' %}">Що нового</a>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'sitepages:contact' %}">Контакти</a>
+      <hr class="border-secondary opacity-25 my-2">
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'privacy' %}active{% endif %}" href="{% url 'sitepages:privacy' %}">Конфіденційність</a>
+      <a class="fh-side-link {% if request.resolver_match.url_name == 'terms' %}active{% endif %}" href="{% url 'sitepages:terms' %}">Умови</a>
+    </nav>
+  </aside>
+  <div class="col-lg-9">
+    <div class="card-soft p-3 p-md-4">
+      <h1 class="page-title mb-1">{{ page_title }}</h1>
+      {% block public_body %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load budget_extras %}
+{% block title %}Звіти · Finance Helper{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h1 class="page-title">Звіти</h1>
+    <p class="page-subtitle">Місячний підсумок і порівняння з попереднім</p>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ prev_label }}">← {{ prev_label }}</a>
+    <span class="fh-pill">{{ month_label }}</span>
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ next_label }}">{{ next_label }} →</a>
+  </div>
+</div>
+
+<div class="fh-card-hero mb-4">
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="stat-label">Баланс</div>
+      <div class="stat-value {% if current.balance >= 0 %}text-income{% else %}text-expense{% endif %}">{% uah current.balance %}</div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-label">Дохід</div>
+      <div class="fw-semibold text-income">{% uah current.income %}</div>
+      {% if income_delta_pct is not None %}
+      <div class="small text-muted-fh">{{ income_delta_pct|floatformat:0 }}% vs {{ prev_label }}</div>
+      {% endif %}
+    </div>
+    <div class="col-md-3">
+      <div class="stat-label">Витрати</div>
+      <div class="fw-semibold text-expense">{% uah current.expenses %}</div>
+      {% if expense_delta_pct is not None %}
+      <div class="small text-muted-fh">{{ expense_delta_pct|floatformat:0 }}% vs {{ prev_label }}</div>
+      {% endif %}
+    </div>
+    <div class="col-md-3">
+      <div class="stat-label">Заощадження</div>
+      <div class="fw-semibold" style="color:var(--fh-orange-300);">{{ current.savings_rate|floatformat:1 }}%</div>
+      <div class="small text-muted-fh">{{ current.count }} операцій</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-soft p-3 p-md-4">
+      <h2 class="h5 mb-3">Витрати за категоріями</h2>
+      {% for row in current.by_category %}
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span><span class="cat-dot me-2" style="background:{{ row.category__color }}"></span>{{ row.category__name }}</span>
+        <strong>{% uah row.total %}</strong>
+      </div>
+      {% empty %}
+      <div class="fh-empty">
+        <p class="mb-2">Немає витрат за цей місяць.</p>
+        <a class="btn btn-sm btn-accent" href="{% url 'budgeting:transaction_create' %}">Додати транзакцію</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-soft p-3 p-md-4">
+      <h2 class="h5 mb-3">Порівняння з {{ prev_label }}</h2>
+      <div class="d-flex justify-content-between mb-2"><span class="text-muted-fh">Дохід тоді</span><span>{% uah previous.income %}</span></div>
+      <div class="d-flex justify-content-between mb-2"><span class="text-muted-fh">Витрати тоді</span><span>{% uah previous.expenses %}</span></div>
+      <div class="d-flex justify-content-between mb-3"><span class="text-muted-fh">Баланс тоді</span><span>{% uah previous.balance %}</span></div>
+      <a class="btn btn-outline-fh btn-sm" href="{% url 'budgeting:insights' %}">Перейти до підказок</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

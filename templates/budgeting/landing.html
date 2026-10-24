@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Finance Helper — контроль особистих фінансів{% endblock %}
+{% block main_class %}fh-main fh-main--flush{% endblock %}
+{% block messages %}
+<div class="container pt-3">
+  {% include 'includes/messages.html' %}
+</div>
+{% endblock %}
+{% block content %}
+<section class="fh-landing-hero">
+  <div class="container">
+    <div class="fh-landing-hero__inner">
+      <div class="fh-landing-hero__copy">
+        <p class="fh-landing-brand">Finance Helper</p>
+        <h1 class="fh-landing-title">Бюджет під контролем — без зайвого шуму</h1>
+        <p class="fh-landing-lead">
+          Облік доходів і витрат, ліміти по категоріях, цілі заощаджень і курси валют у одному місці.
+        </p>
+        <div class="fh-landing-cta">
+          <a class="btn btn-accent btn-lg" href="{% url 'accounts:register' %}">Почати безкоштовно</a>
+          <a class="btn btn-outline-fh btn-lg" href="{% url 'accounts:login' %}">Увійти</a>
+          <a class="btn btn-outline-fh btn-lg" href="{% url 'sitepages:about' %}">Про продукт</a>
+        </div>
+      </div>
+
+      <div class="fh-landing-hero__visual" aria-hidden="true">
+        <div class="fh-app-preview fh-app-preview--hero">
+          <div class="fh-app-preview__bar">
+            <span></span><span></span><span></span>
+            <em>Дашборд · жовтень</em>
+          </div>
+          <div class="fh-app-preview__balance">
+            <small>Баланс місяця</small>
+            <strong>+ ₴ 12 450</strong>
+            <div class="fh-app-preview__split">
+              <span class="up">Дохід ₴ 42 000</span>
+              <span class="down">Витрати ₴ 29 550</span>
+            </div>
+          </div>
+          <div class="fh-app-preview__rows">
+            <div><i></i><span>Продукти</span><b>− ₴ 3 200</b></div>
+            <div><i class="c2"></i><span>Зарплата</span><b class="inc">+ ₴ 42 000</b></div>
+            <div><i class="c3"></i><span>Транспорт</span><b>− ₴ 1 180</b></div>
+            <div><i class="c4"></i><span>Кав’ярня</span><b>− ₴ 420</b></div>
+          </div>
+          <div class="fh-app-preview__bars">
+            <div class="fh-app-preview__meter"><span style="width:72%"></span><label>Їжа 72%</label></div>
+            <div class="fh-app-preview__meter"><span style="width:45%"></span><label>Ціль «Відпустка» 45%</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fh-landing-section" id="features">
+  <div class="container">
+    <h2 class="fh-landing-h2">Що вміє Finance Helper</h2>
+    <p class="fh-landing-section-lead">Усе потрібне для щоденного обліку — без складних таблиць.</p>
+    <div class="fh-landing-features">
+      <article>
+        <i class="bi bi-arrow-left-right"></i>
+        <h3>Транзакції</h3>
+        <p>Доходи й витрати з категоріями, тегами та датою. Тип і категорія підлаштовуються одне під одного.</p>
+      </article>
+      <article>
+        <i class="bi bi-wallet2"></i>
+        <h3>Бюджети</h3>
+        <p>Місячні ліміти по категоріях і прогрес витрат — одразу видно, де перевищення.</p>
+      </article>
+      <article>
+        <i class="bi bi-bullseye"></i>
+        <h3>Цілі</h3>
+        <p>Накопичення на відпустку, техніку чи «подушку» з поповненнями в потрібній валюті.</p>
+      </article>
+      <article>
+        <i class="bi bi-currency-exchange"></i>
+        <h3>Мультивалютність</h3>
+        <p>Відображення в UAH, USD, EUR, PLN тощо. Курси з НБУ, ПриватБанку й Monobank.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="fh-landing-section fh-landing-section--preview" id="preview">
+  <div class="container">
+    <h2 class="fh-landing-h2">Як виглядає робота в застосунку</h2>
+    <p class="fh-landing-section-lead">Фрагмент панелі: баланс, останні операції та прогрес бюджетів.</p>
+    <div class="fh-app-preview fh-app-preview--wide">
+      <div class="fh-app-preview__bar">
+        <span></span><span></span><span></span>
+        <em>Finance Helper · огляд місяця</em>
+      </div>
+      <div class="fh-app-preview__wide-grid">
+        <div class="fh-app-preview__balance">
+          <small>Баланс місяця</small>
+          <strong>+ ₴ 8 920</strong>
+          <div class="fh-app-preview__split">
+            <span class="up">Дохід ₴ 38 500</span>
+            <span class="down">Витрати ₴ 29 580</span>
+            <span>Заощадження 23%</span>
+          </div>
+        </div>
+        <div class="fh-app-preview__side">
+          <div class="fh-app-preview__meter"><span style="width:68%"></span><label>Бюджет «Їжа»</label></div>
+          <div class="fh-app-preview__meter"><span style="width:41%"></span><label>Бюджет «Транспорт»</label></div>
+          <div class="fh-app-preview__meter"><span style="width:55%"></span><label>Ціль «Новий ноутбук»</label></div>
+        </div>
+      </div>
+      <div class="fh-app-preview__rows fh-app-preview__rows--dense">
+        <div><i></i><span>18.10 · Продукти</span><b>− ₴ 640</b></div>
+        <div><i class="c3"></i><span>17.10 · Метро</span><b>− ₴ 48</b></div>
+        <div><i class="c2"></i><span>15.10 · Фріланс</span><b class="inc">+ ₴ 6 500</b></div>
+        <div><i class="c4"></i><span>14.10 · Підписка</span><b>− ₴ 299</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fh-landing-section" id="how">
+  <div class="container">
+    <h2 class="fh-landing-h2">Як почати</h2>
+    <p class="fh-landing-section-lead">Три кроки — і вже є картина місяця.</p>
+    <ol class="fh-landing-steps">
+      <li>
+        <strong>Створіть акаунт</strong>
+        <span>Реєстрація за хвилину — лише логін, email і пароль.</span>
+      </li>
+      <li>
+        <strong>Додайте категорії й перші операції</strong>
+        <span>Або одразу задайте бюджети та цілі — дані лишаються у вашому профілі.</span>
+      </li>
+      <li>
+        <strong>Оберіть валюту відображення</strong>
+        <span>У налаштуваннях — суми на екрані в зручній валюті, у базі стабільно в гривнях.</span>
+      </li>
+    </ol>
+    <div class="fh-landing-cta fh-landing-cta--center">
+      <a class="btn btn-accent btn-lg" href="{% url 'accounts:register' %}">Створити акаунт</a>
+      <a class="btn btn-outline-fh btn-lg" href="{% url 'sitepages:pricing' %}">Тарифи</a>
+      <a class="btn btn-outline-fh btn-lg" href="{% url 'sitepages:faq' %}">FAQ</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

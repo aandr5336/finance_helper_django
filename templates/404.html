@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Сторінку не знайдено{% endblock %}
+{% block content %}
+<div class="card-soft p-4 p-md-5 text-center col-lg-7 mx-auto">
+  <div class="display-5 fw-bold mb-2" style="color:var(--fh-orange-300);">404</div>
+  <h1 class="page-title">Такої сторінки немає</h1>
+  <p class="page-subtitle mb-4">Перевірте адресу або поверніться на головну.</p>
+  {% if user.is_authenticated %}
+  <a class="btn btn-accent" href="{% url 'budgeting:dashboard' %}">На дашборд</a>
+  {% else %}
+  <a class="btn btn-accent" href="{% url 'budgeting:home' %}">На головну</a>
+  {% endif %}
+</div>
+{% endblock %}

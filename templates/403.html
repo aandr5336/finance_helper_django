@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Доступ заборонено{% endblock %}
+{% block content %}
+<div class="card-soft p-4 p-md-5 text-center col-lg-7 mx-auto">
+  <div class="display-5 fw-bold mb-2" style="color:var(--fh-orange-300);">403</div>
+  <h1 class="page-title">Немає доступу</h1>
+  <p class="page-subtitle mb-4">Ця дія доступна лише власнику запису або з особливими правами.</p>
+  <a class="btn btn-accent" href="{% url 'budgeting:dashboard' %}">На дашборд</a>
+</div>
+{% endblock %}

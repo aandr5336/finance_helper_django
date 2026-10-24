@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} · Довідка{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <aside class="col-lg-3">
+    <nav class="card-soft p-3 fh-side-nav">
+      <div class="text-muted-fh small text-uppercase mb-2">Довідка</div>
+      <a class="fh-side-link" href="{% url 'budgeting:help_index' %}">Усі статті</a>
+      {% for a in articles %}
+      <a class="fh-side-link {% if a.slug == slug %}active{% endif %}" href="{% url 'budgeting:help_article' a.slug %}">{{ a.title }}</a>
+      {% endfor %}
+    </nav>
+  </aside>
+  <div class="col-lg-9">
+    <div class="card-soft p-3 p-md-4">
+      <h1 class="page-title mb-3">{{ title }}</h1>
+      <div class="fh-help-body">{{ body|linebreaks }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

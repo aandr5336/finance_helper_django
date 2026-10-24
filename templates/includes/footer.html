@@ -1,0 +1,61 @@
+<footer class="fh-site-footer">
+  <div class="container">
+    <div class="fh-footer-grid">
+      <div class="fh-footer-brand">
+        <a class="fh-footer-logo" href="{% if user.is_authenticated %}{% url 'budgeting:dashboard' %}{% else %}{% url 'budgeting:home' %}{% endif %}">
+          <span class="brand-icon"><i class="bi bi-graph-up-arrow"></i></span>
+          Finance Helper
+        </a>
+        <p class="fh-footer-tagline">Особистий бюджет, категорії, ліміти й цілі заощаджень — з мультивалютним відображенням.</p>
+      </div>
+
+      <div>
+        <div class="fh-footer-heading">Продукт</div>
+        <ul class="fh-footer-links">
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'budgeting:dashboard' %}">Дашборд</a></li>
+          <li><a href="{% url 'budgeting:reports' %}">Звіти</a></li>
+          <li><a href="{% url 'budgeting:insights' %}">Підказки</a></li>
+          <li><a href="{% url 'budgeting:help_index' %}">Довідка</a></li>
+          {% else %}
+          <li><a href="{% url 'budgeting:home' %}#features">Можливості</a></li>
+          <li><a href="{% url 'sitepages:about' %}">Про нас</a></li>
+          <li><a href="{% url 'sitepages:pricing' %}">Тарифи</a></li>
+          <li><a href="{% url 'sitepages:faq' %}">FAQ</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div>
+        <div class="fh-footer-heading">Акаунт</div>
+        <ul class="fh-footer-links">
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'accounts:settings' %}">Налаштування</a></li>
+          <li><a href="{% url 'accounts:settings_data' %}">Експорт даних</a></li>
+          <li><a href="{% url 'accounts:password_change' %}">Зміна пароля</a></li>
+          {% else %}
+          <li><a href="{% url 'accounts:login' %}">Увійти</a></li>
+          <li><a href="{% url 'accounts:register' %}">Реєстрація</a></li>
+          <li><a href="{% url 'accounts:password_reset' %}">Відновлення пароля</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div>
+        <div class="fh-footer-heading">Документи</div>
+        <ul class="fh-footer-links">
+          <li><a href="{% url 'sitepages:privacy' %}">Конфіденційність</a></li>
+          <li><a href="{% url 'sitepages:terms' %}">Умови</a></li>
+          <li><a href="{% url 'sitepages:changelog' %}">Що нового</a></li>
+          <li><a href="{% url 'sitepages:contact' %}">Контакти</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fh-footer-bottom">
+      <span>© {% now "Y" %} Finance Helper</span>
+      <span class="fh-footer-sep">·</span>
+      <span>Бюджетування та аналіз витрат</span>
+    </div>
+  </div>
+</footer>
