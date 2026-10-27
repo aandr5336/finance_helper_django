@@ -81,9 +81,12 @@ _db_options = {
     ),
 }
 if env.bool('DB_SSL', default=False):
-    # Aiven MySQL requires TLS (ssl-mode=REQUIRED).
+    # Aiven requires TLS; free/trial CA chain often fails strict verify on Render.
     import ssl as ssl_module
-    _db_options['ssl'] = ssl_module.create_default_context()
+    ctx = ssl_module.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl_module.CERT_NONE
+    _db_options['ssl'] = ctx
 
 DATABASES = {
     'default': {
