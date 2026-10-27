@@ -81,8 +81,9 @@ _db_options = {
     ),
 }
 if env.bool('DB_SSL', default=False):
-    # Aiven MySQL: ssl-mode=REQUIRED (certificate verify optional for free tier).
-    _db_options['ssl'] = {'ssl': True}
+    # Aiven MySQL requires TLS (ssl-mode=REQUIRED).
+    import ssl as ssl_module
+    _db_options['ssl'] = ssl_module.create_default_context()
 
 DATABASES = {
     'default': {
