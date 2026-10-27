@@ -72,7 +72,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'budget_project.wsgi.application'
 
-# Local .env uses DB_*; Railway MySQL plugin uses MYSQL*.
+# Local .env uses DB_*; Railway/Render may use MYSQL*. Aiven needs DB_SSL=True.
+_db_options = {
+    'charset': 'utf8mb4',
+    'init_command': (
+        "SET sql_mode='STRICT_TRANS_TABLES', "
+        "NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'"
+    ),
+}
+if env.bool('DB_SSL', default=False):
+    # Aiven MySQL: ssl-mode=REQUIRED (certificate verify optional for free tier).
+    _db_options['ssl'] = {'ssl': True}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -81,13 +92,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('MYSQLPASSWORD') or env('DB_PASSWORD'),
         'HOST': os.environ.get('MYSQLHOST') or env('DB_HOST', default='127.0.0.1'),
         'PORT': os.environ.get('MYSQLPORT') or env('DB_PORT', default='3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': (
-                "SET sql_mode='STRICT_TRANS_TABLES', "
-                "NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'"
-            ),
-        },
+        'OPTIONS': _db_options,
     }
 }
 
