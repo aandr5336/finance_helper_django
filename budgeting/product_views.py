@@ -1,17 +1,14 @@
-"""Звіти, insights, календар, довідка, CSV — «глибина» продукту."""
+"""Звіти, insights, календар, довідка."""
 
 from __future__ import annotations
 
 import calendar
-import csv
-import io
 from datetime import date, timedelta
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
@@ -30,8 +27,8 @@ HELP_ARTICLES = {
     'currency': {
         'title': 'Валюти і курси',
         'body': (
-            'Суми в базі завжди в гривнях. Обрана валюта змінює лише відображення.\n'
-            'Курси кешуються ~30 хвилин; примусове оновлення — у Налаштуваннях → Валюта.'
+            'Усі суми зберігаються в гривнях. Обрана валюта змінює лише те, як ви їх бачите.\n'
+            'Оновити курси можна в Налаштуваннях → Валюта.'
         ),
     },
     'budgets': {
@@ -41,19 +38,11 @@ HELP_ARTICLES = {
             'Якщо додаєте бюджет на ту саму категорію й місяць повторно — сума додається до існуючого.'
         ),
     },
-    'csv': {
-        'title': 'Імпорт і експорт CSV',
-        'body': (
-            'Експорт: Налаштування → Дані → Завантажити CSV.\n'
-            'Імпорт: колонки date,type,category,amount,note '
-            '(type = income або expense, date = РРРР-ММ-ДД).'
-        ),
-    },
     'reports': {
         'title': 'Звіти та підказки',
         'body': (
             'Розділ «Звіти» показує підсумок місяця й порівняння з попереднім.\n'
-            '«Підказки» — прості евристики (перевищення бюджетів, динаміка витрат).'
+            '«Підказки» — зрозумілі поради, якщо ліміт майже вичерпано або витрати зросли.'
         ),
     },
 }
@@ -328,98 +317,6 @@ def help_article(request, slug: str):
             {'slug': s, 'title': m['title']} for s, m in HELP_ARTICLES.items()
         ],
     })
-
-
-@login_required
-@require_GET
-def export_csv(request):
-    response = HttpResponse(content_type='text/csv; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="finance_helper_transactions.csv"'
-    response.write('\ufeff')  # BOM for Excel
-    writer = csv.writer(response)
-    writer.writerow(['date', 'type', 'category', 'amount', 'note'])
-    qs = (
-        Transaction.objects.filter(owner=request.user)
-        .select_related('category')
-        .order_by('occurred_at', 'id')
-    )
-    for t in qs:
-        writer.writerow([
-            t.occurred_at.isoformat(),
-            t.tx_type,
-            t.category.name,
-            str(t.amount),
-            t.note.replace('\n', ' ').strip(),
-        ])
-    return response
-
-
-@login_required
-@require_http_methods(['POST'])
-def import_csv(request):
-    upload = request.FILES.get('csv_file')
-    if not upload:
-        messages.error(request, 'Оберіть CSV-файл.')
-        return redirect('accounts:settings_data')
-
-    try:
-        raw = upload.read().decode('utf-8-sig')
-    except UnicodeDecodeError:
-        messages.error(request, 'Файл має бути в UTF-8.')
-        return redirect('accounts:settings_data')
-
-    reader = csv.DictReader(io.StringIO(raw))
-    if not reader.fieldnames:
-        messages.error(request, 'Порожній CSV.')
-        return redirect('accounts:settings_data')
-
-    required = {'date', 'type', 'category', 'amount'}
-    fields = {f.strip().lower() for f in reader.fieldnames}
-    if not required.issubset(fields):
-        messages.error(
-            request,
-            'Потрібні колонки: date, type, category, amount (опційно note).',
-        )
-        return redirect('accounts:settings_data')
-
-    created = 0
-    errors = 0
-    for row in reader:
-        try:
-            norm = {k.strip().lower(): (v or '').strip() for k, v in row.items() if k}
-            tx_type = norm['type'].lower()
-            if tx_type not in ('income', 'expense'):
-                raise ValueError('bad type')
-            amount = Decimal(norm['amount'].replace(',', '.'))
-            if amount <= 0:
-                raise ValueError('amount')
-            occurred = date.fromisoformat(norm['date'])
-            cat_name = norm['category'][:100] or 'Інше'
-            category, _ = Category.objects.get_or_create(
-                owner=request.user,
-                name=cat_name,
-                category_type=tx_type,
-                defaults={'icon': 'tag', 'color': '#ff9800', 'is_active': True},
-            )
-            Transaction.objects.create(
-                owner=request.user,
-                category=category,
-                amount=amount,
-                tx_type=tx_type,
-                note=norm.get('note', '')[:500],
-                occurred_at=occurred,
-            )
-            created += 1
-        except (ValueError, InvalidOperation, KeyError, TypeError):
-            errors += 1
-
-    if created:
-        messages.success(request, f'Імпортовано транзакцій: {created}.')
-    if errors:
-        messages.warning(request, f'Пропущено рядків з помилками: {errors}.')
-    if not created and not errors:
-        messages.info(request, 'У файлі не було рядків даних.')
-    return redirect('budgeting:transaction_list')
 
 
 def build_onboarding(user) -> dict | None:

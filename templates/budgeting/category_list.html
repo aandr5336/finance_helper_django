@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Категорії · Finance Helper{% endblock %}
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3 mb-md-4">
   <div>
     <h1 class="page-title">Категорії</h1>
-    <p class="page-subtitle">Доходи та витрати за групами · теги для транзакцій</p>
+    <p class="page-subtitle mb-0">Доходи та витрати за групами · теги для транзакцій</p>
   </div>
-  <a class="btn btn-accent" href="{% url 'budgeting:category_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати категорію</a>
+  <a class="btn btn-accent w-100 w-md-auto" href="{% url 'budgeting:category_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати категорію</a>
 </div>
 
-<div class="card-soft p-3 p-md-4 mb-4">
+<div class="card-soft p-3 p-md-4 mb-4 d-none d-md-block">
   <h2 class="h5 mb-3">Категорії</h2>
   <div class="table-responsive">
     <table class="table mb-0">
@@ -30,10 +30,24 @@
   </div>
 </div>
 
+<div class="fh-list mb-4 d-md-none">
+  {% for c in categories %}
+  <a href="{% url 'budgeting:category_detail' c.pk %}" class="fh-list-item">
+    <span class="fh-list-item__dot" style="background:{{ c.color }}"></span>
+    <span class="fh-list-item__main">
+      <span class="fh-list-item__title">{{ c.name }}</span>
+      <span class="fh-list-item__meta">{{ c.get_category_type_display }}{% if not c.is_active %} · неактивна{% endif %}</span>
+    </span>
+    <i class="bi bi-chevron-right fh-list-item__chevron" aria-hidden="true"></i>
+  </a>
+  {% empty %}
+  <div class="card-soft p-4 fh-empty">Немає категорій. <a href="{% url 'budgeting:category_create' %}">Створити першу</a></div>
+  {% endfor %}
+</div>
+
 <div class="card-soft p-3 p-md-4" id="tags">
   <h2 class="h5 mb-1">Теги</h2>
-  <p class="page-subtitle mb-3">Мітки для транзакцій — можна обрати при додаванні операції</p>
-
+  <p class="page-subtitle mb-3">Мітки для транзакцій</p>
   <form method="post" action="{% url 'budgeting:tag_create' %}" class="fh-tag-add-row mb-3">
     {% csrf_token %}
     <div class="flex-grow-1">
@@ -42,26 +56,18 @@
     </div>
     <button class="btn btn-accent align-self-end" type="submit">Додати тег</button>
   </form>
-
   <div class="fh-tag-manage">
     {% for tag in tags %}
       <div class="fh-tag-chip">
         <span>{{ tag.name }}</span>
-        <button
-          type="button"
-          class="fh-tag-chip-remove"
-          title="Видалити"
-          aria-label="Видалити {{ tag.name }}"
-          data-bs-toggle="modal"
-          data-bs-target="#tagDeleteModal"
-          data-tag-name="{{ tag.name }}"
-          data-tag-action="{% url 'budgeting:tag_delete' tag.pk %}"
-        >
+        <button type="button" class="fh-tag-chip-remove" title="Видалити" aria-label="Видалити {{ tag.name }}"
+          data-bs-toggle="modal" data-bs-target="#tagDeleteModal"
+          data-tag-name="{{ tag.name }}" data-tag-action="{% url 'budgeting:tag_delete' tag.pk %}">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
     {% empty %}
-      <p class="text-muted-fh mb-0">Ще немає тегів — додайте перший вище.</p>
+      <p class="text-muted-fh mb-0">Ще немає тегів.</p>
     {% endfor %}
   </div>
 </div>
@@ -73,9 +79,7 @@
         <h5 class="modal-title" id="tagDeleteModalLabel">Видалити тег?</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрити"></button>
       </div>
-      <div class="modal-body text-muted-fh">
-        Тег «<strong id="tagDeleteName"></strong>» буде видалено. З транзакцій він також зникне.
-      </div>
+      <div class="modal-body text-muted-fh">Тег «<strong id="tagDeleteName"></strong>» буде видалено.</div>
       <div class="modal-footer border-secondary">
         <button type="button" class="btn btn-outline-fh" data-bs-dismiss="modal">Скасувати</button>
         <form method="post" id="tagDeleteForm" action="">
@@ -87,7 +91,6 @@
   </div>
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <script>
 (function () {
@@ -96,12 +99,8 @@
   modal.addEventListener('show.bs.modal', function (event) {
     const btn = event.relatedTarget;
     if (!btn) return;
-    const name = btn.getAttribute('data-tag-name') || '';
-    const action = btn.getAttribute('data-tag-action') || '';
-    const nameEl = document.getElementById('tagDeleteName');
-    const form = document.getElementById('tagDeleteForm');
-    if (nameEl) nameEl.textContent = name;
-    if (form) form.setAttribute('action', action);
+    document.getElementById('tagDeleteName').textContent = btn.getAttribute('data-tag-name') || '';
+    document.getElementById('tagDeleteForm').setAttribute('action', btn.getAttribute('data-tag-action') || '');
   });
 })();
 </script>

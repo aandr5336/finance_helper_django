@@ -13,5 +13,6 @@ db.sqlite3
 .DS_Store
 staticfiles/
 media/
+sent_emails/
 .coverage
 htmlcov/

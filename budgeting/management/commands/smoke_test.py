@@ -22,22 +22,36 @@ class Command(BaseCommand):
             if not cond:
                 errors.append(msg)
 
+        # Публічний лендінг (гость) — 200, не редірект
         r = c.get('/')
-        check(r.status_code in (301, 302), f'dashboard anon: {r.status_code}')
+        check(r.status_code == 200, f'landing anon: {r.status_code}')
         check(c.get('/accounts/login/').status_code == 200, 'login page')
+        check(c.get('/about/').status_code == 200, 'about')
+        check(c.get('/faq/').status_code == 200, 'faq')
+        check(c.get('/pricing/').status_code == 404, 'pricing removed')
+
 
         check(c.login(username='demo', password='demo12345'), 'login demo')
 
+        # Авторизований / → dashboard
+        r = c.get('/')
+        check(r.status_code == 302, f'home auth redirect: {r.status_code}')
+
         for path in [
-            '/',
+            '/dashboard/',
             '/transactions/',
             '/categories/',
             '/budgets/',
             '/goals/',
+            '/reports/',
+            '/insights/',
+            '/help/',
+            '/transactions/calendar/',
             '/transactions/add/',
             '/categories/add/',
             '/budgets/add/',
             '/goals/add/',
+            '/accounts/settings/',
         ]:
             code = c.get(path).status_code
             check(code == 200, f'GET {path} -> {code}')

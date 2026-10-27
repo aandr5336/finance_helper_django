@@ -7,16 +7,16 @@
     <h1 class="page-title">Бюджети</h1>
     <p class="page-subtitle">Місячні ліміти та прогрес витрат</p>
   </div>
-  <a class="btn btn-accent" href="{% url 'budgeting:budget_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати</a>
+  <a class="btn btn-accent w-100 w-md-auto" href="{% url 'budgeting:budget_create' %}"><i class="bi bi-plus-lg me-1"></i>Додати</a>
 </div>
 <div class="row g-3">
 {% for b in budgets %}
-  <div class="col-md-6">
+  <div class="col-12 col-md-6">
     <a href="{{ b.get_absolute_url }}" class="text-decoration-none text-reset">
       <div class="card-soft p-3 p-md-4 h-100">
-        <div class="d-flex justify-content-between mb-2">
-          <strong>{{ b.category.name }}</strong>
-          <span class="fh-pill">{{ b.month|date:'Y-m' }}</span>
+        <div class="d-flex justify-content-between mb-2 gap-2">
+          <strong class="text-truncate">{{ b.category.name }}</strong>
+          <span class="fh-pill flex-shrink-0">{{ b.month|date:'Y-m' }}</span>
         </div>
         <div class="small text-muted-fh mb-2">{% uah b.spent %} з {% uah b.amount %}</div>
         {% budget_progress_bar b.percent over=b.is_over %}

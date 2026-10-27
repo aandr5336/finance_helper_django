@@ -13,9 +13,6 @@ urlpatterns = [
     path('insights/', product_views.insights, name='insights'),
     path('help/', product_views.help_index, name='help_index'),
     path('help/<slug:slug>/', product_views.help_article, name='help_article'),
-    path('export/csv/', product_views.export_csv, name='export_csv'),
-    path('import/csv/', product_views.import_csv, name='import_csv'),
-
     path('transactions/', views.TransactionListView.as_view(), name='transaction_list'),
     path('transactions/calendar/', product_views.transaction_calendar, name='transaction_calendar'),
     path('transactions/add/', views.TransactionCreateView.as_view(), name='transaction_create'),

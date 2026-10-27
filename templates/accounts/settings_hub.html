@@ -31,7 +31,7 @@
       <div class="col-md-6">
         <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_currency' %}">
           <div class="fw-semibold text-white mb-1"><i class="bi bi-currency-exchange me-2"></i>Валюта і курси</div>
-          <div class="small text-muted-fh">Відображення сум і таблиця FX</div>
+          <div class="small text-muted-fh">У якій валюті показувати суми</div>
         </a>
       </div>
       <div class="col-md-6">
@@ -43,7 +43,35 @@
       <div class="col-md-6">
         <a class="card-soft p-3 d-block text-decoration-none h-100" href="{% url 'accounts:settings_data' %}">
           <div class="fw-semibold text-white mb-1"><i class="bi bi-database me-2"></i>Дані</div>
-          <div class="small text-muted-fh">Експорт CSV та видалення акаунта</div>
+          <div class="small text-muted-fh">Видалення акаунта</div>
+        </a>
+      </div>
+    </div>
+
+    <h2 class="h5 mt-4 mb-3">Ще в застосунку</h2>
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <a class="card-soft p-3 d-block text-decoration-none h-100 text-center" href="{% url 'budgeting:category_list' %}">
+          <i class="bi bi-tags d-block mb-2" style="color:var(--fh-orange-400);"></i>
+          <div class="small text-white">Категорії</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a class="card-soft p-3 d-block text-decoration-none h-100 text-center" href="{% url 'budgeting:reports' %}">
+          <i class="bi bi-bar-chart d-block mb-2" style="color:var(--fh-orange-400);"></i>
+          <div class="small text-white">Звіти</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a class="card-soft p-3 d-block text-decoration-none h-100 text-center" href="{% url 'budgeting:insights' %}">
+          <i class="bi bi-lightbulb d-block mb-2" style="color:var(--fh-orange-400);"></i>
+          <div class="small text-white">Підказки</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a class="card-soft p-3 d-block text-decoration-none h-100 text-center" href="{% url 'budgeting:help_index' %}">
+          <i class="bi bi-question-circle d-block mb-2" style="color:var(--fh-orange-400);"></i>
+          <div class="small text-white">Довідка</div>
         </a>
       </div>
     </div>

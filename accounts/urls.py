@@ -53,9 +53,7 @@ urlpatterns = [
     ),
     path(
         'password-reset/done/',
-        auth_views.PasswordResetDoneView.as_view(
-            template_name='accounts/password_reset_done.html',
-        ),
+        views.LocalPasswordResetDoneView.as_view(),
         name='password_reset_done',
     ),
     path(

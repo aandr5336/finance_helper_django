@@ -6,6 +6,21 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
+def query_string(context, **kwargs):
+    """Збирає поточний GET-рядок і підставляє/скидає ключі (для пагінації з фільтрами)."""
+    request = context.get('request')
+    if request is None:
+        return ''
+    params = request.GET.copy()
+    for key, value in kwargs.items():
+        if value is None or value == '':
+            params.pop(key, None)
+        else:
+            params[key] = value
+    return params.urlencode()
+
+
+@register.simple_tag(takes_context=True)
 def uah(context, amount):
     """Форматує суму з урахуванням валюти з налаштувань користувача."""
     currency = context.get('display_currency') or 'UAH'

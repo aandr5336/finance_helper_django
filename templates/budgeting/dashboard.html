@@ -31,7 +31,7 @@
     <h1 class="page-title">Привіт, {{ user.username }}</h1>
     <p class="page-subtitle">Фінансовий зріз за {{ month_label }} · <a href="{% url 'budgeting:reports' %}?month={{ month_label }}">Звіт</a> · <a href="{% url 'budgeting:insights' %}">Підказки</a></p>
   </div>
-  <a class="btn btn-accent" href="{% url 'budgeting:transaction_create' %}">
+  <a class="btn btn-accent w-100 w-md-auto" href="{% url 'budgeting:transaction_create' %}">
     <i class="bi bi-plus-lg me-1"></i> Транзакція
   </a>
 </div>
@@ -75,30 +75,21 @@
         <h2 class="h5 mb-0">Останні транзакції</h2>
         <a class="small" href="{% url 'budgeting:transaction_list' %}">Усі →</a>
       </div>
-      <div class="table-responsive">
-        <table class="table align-middle">
-          <thead>
-            <tr><th>Дата</th><th>Категорія</th><th>Сума</th></tr>
-          </thead>
-          <tbody>
-          {% for t in recent %}
-            <tr>
-              <td class="text-muted-fh">{{ t.occurred_at }}</td>
-              <td>
-                <span class="cat-dot me-1" style="background:{{ t.category.color }}"></span>
-                <a href="{{ t.get_absolute_url }}">{{ t.category.name }}</a>
-              </td>
-              <td>
-                <span class="badge {% if t.tx_type == 'expense' %}badge-expense{% else %}badge-income{% endif %}">
-                  {% if t.tx_type == 'expense' %}−{% else %}+{% endif %}{% uah t.amount %}
-                </span>
-              </td>
-            </tr>
-          {% empty %}
-            <tr><td colspan="3" class="text-muted-fh">Поки немає транзакцій — додайте першу.</td></tr>
-          {% endfor %}
-          </tbody>
-        </table>
+      <div class="fh-list fh-list--compact">
+        {% for t in recent %}
+        <a href="{{ t.get_absolute_url }}" class="fh-list-item">
+          <span class="fh-list-item__dot" style="background:{{ t.category.color }}"></span>
+          <span class="fh-list-item__main">
+            <span class="fh-list-item__title">{{ t.category.name }}</span>
+            <span class="fh-list-item__meta">{{ t.occurred_at|date:"d.m.Y" }}</span>
+          </span>
+          <span class="fh-list-item__amount {% if t.tx_type == 'expense' %}is-expense{% else %}is-income{% endif %}">
+            {% if t.tx_type == 'expense' %}−{% else %}+{% endif %}{% uah t.amount %}
+          </span>
+        </a>
+        {% empty %}
+        <p class="text-muted-fh mb-0 px-1">Поки немає транзакцій — додайте першу.</p>
+        {% endfor %}
       </div>
     </div>
   </div>

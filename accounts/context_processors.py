@@ -52,13 +52,20 @@ def _resolve_nav_section(request) -> str:
 
 def user_settings(request):
     currency = UserProfile.Currency.UAH
+    rates_payload = {
+        'rates': {},
+        'source': None,
+        'fetched_at': None,
+        'next_refresh_at': None,
+    }
+
     if getattr(request, 'user', None) is not None and request.user.is_authenticated:
         profile = getattr(request.user, 'profile', None)
         if profile is None:
             profile, _ = UserProfile.objects.get_or_create(user=request.user)
         currency = profile.preferred_currency
-
-    rates_payload = fetch_exchange_rates(force=False)
+        # Курси потрібні лише авторизованим (відображення сум) — не на публічному лендінгу.
+        rates_payload = fetch_exchange_rates(force=False)
 
     return {
         'display_currency': currency,

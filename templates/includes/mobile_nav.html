@@ -1,0 +1,24 @@
+{% if user.is_authenticated %}
+<nav class="fh-mobile-nav" aria-label="Основне меню">
+  <a class="fh-mobile-nav__item {% if nav_section == 'dashboard' %}is-active{% endif %}" href="{% url 'budgeting:dashboard' %}">
+    <i class="bi bi-speedometer2" aria-hidden="true"></i>
+    <span>Дашборд</span>
+  </a>
+  <a class="fh-mobile-nav__item {% if nav_section == 'transactions' %}is-active{% endif %}" href="{% url 'budgeting:transaction_list' %}">
+    <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+    <span>Операції</span>
+  </a>
+  <a class="fh-mobile-nav__item {% if nav_section == 'budgets' %}is-active{% endif %}" href="{% url 'budgeting:budget_list' %}">
+    <i class="bi bi-wallet2" aria-hidden="true"></i>
+    <span>Бюджети</span>
+  </a>
+  <a class="fh-mobile-nav__item {% if nav_section == 'goals' %}is-active{% endif %}" href="{% url 'budgeting:goal_list' %}">
+    <i class="bi bi-bullseye" aria-hidden="true"></i>
+    <span>Цілі</span>
+  </a>
+  <a class="fh-mobile-nav__item {% if nav_section == 'settings' or nav_section == 'categories' or nav_section == 'reports' or nav_section == 'insights' or nav_section == 'help' %}is-active{% endif %}" href="{% url 'accounts:settings' %}">
+    <i class="bi bi-grid" aria-hidden="true"></i>
+    <span>Ще</span>
+  </a>
+</nav>
+{% endif %}

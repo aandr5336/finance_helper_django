@@ -7,10 +7,10 @@
     <h1 class="page-title">Звіти</h1>
     <p class="page-subtitle">Місячний підсумок і порівняння з попереднім</p>
   </div>
-  <div class="d-flex align-items-center gap-2">
-    <a class="btn btn-outline-fh btn-sm" href="?month={{ prev_label }}">← {{ prev_label }}</a>
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ prev_label }}" title="{{ prev_label }}">←</a>
     <span class="fh-pill">{{ month_label }}</span>
-    <a class="btn btn-outline-fh btn-sm" href="?month={{ next_label }}">{{ next_label }} →</a>
+    <a class="btn btn-outline-fh btn-sm" href="?month={{ next_label }}" title="{{ next_label }}">→</a>
   </div>
 </div>
 

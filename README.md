@@ -1,4 +1,4 @@
-# BudgetFlow — Django + MySQL
+﻿# Finance Helper — Django + MySQL
 
 Система автоматизації бюджетування та аналізу ефективності витрат користувача.
 
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Відредагуйте `.env`: вкажіть `DB_PASSWORD` (пароль root MySQL).
+Відредагуйте `.env`: вкажіть `SECRET_KEY` (довгий випадковий рядок) і `DB_PASSWORD` (пароль root MySQL).
 
 ### 3. Міграції та демо-дані
 
@@ -57,3 +57,4 @@ python manage.py runserver
 ## Звіт
 
 Матеріали: `docs/REPORT_1_1.md` … `REPORT_1_4.md`, `REPORT_1_CONCLUSION.md`.
+

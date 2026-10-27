@@ -4,7 +4,7 @@
 {% block content %}
 <div class="mb-4">
   <h1 class="page-title">Валюта і курси</h1>
-  <p class="page-subtitle">Відображення сум та таблиця FX</p>
+  <p class="page-subtitle">Оберіть валюту й перегляньте актуальні курси</p>
 </div>
 <div class="row g-4">
   <aside class="col-lg-3">{% include 'accounts/includes/settings_nav.html' %}</aside>
@@ -31,11 +31,9 @@
     <div class="card-soft p-3 p-md-4">
       <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
         <div>
-          <div class="text-muted-fh small text-uppercase mb-1" style="letter-spacing:.06em;">Курси валют (API)</div>
+          <div class="text-muted-fh small text-uppercase mb-1" style="letter-spacing:.06em;">Курси валют</div>
           <div class="small text-muted-fh">
-            Джерело:
-            {% if rates_source == 'fallback' %}резервні значення{% else %}{{ rates_source }}{% endif %}
-            {% if rates_fetched_at %} · оновлено о {{ rates_fetched_at }}{% endif %}
+            {% if rates_fetched_at %}Оновлено о {{ rates_fetched_at }}{% else %}Актуальні курси для відображення{% endif %}
             {% if rates_next_refresh_at %} · наступне оновлення о {{ rates_next_refresh_at }}{% endif %}
           </div>
         </div>
@@ -73,7 +71,7 @@
       </div>
       {% endif %}
       <p class="small text-muted-fh mt-3 mb-0">
-        Кеш 30 хв. Приклади: 1000 ₴ ≈ {% money 1000 'USD' %} · {% money 1000 'EUR' %} · {% money 1000 'PLN' %}
+        Приклади: 1000 ₴ ≈ {% money 1000 'USD' %} · {% money 1000 'EUR' %} · {% money 1000 'PLN' %}
       </p>
     </div>
   </div>

@@ -1,7 +1,12 @@
+import re
+from pathlib import Path
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import PasswordResetDoneView
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
@@ -9,6 +14,36 @@ from budgeting.currency import fetch_exchange_rates
 
 from .forms import ProfileEmailForm, ProfileSettingsForm, RegisterForm
 from .models import UserProfile
+
+
+def _latest_password_reset_link() -> str | None:
+    """У DEBUG читаємо останній лист із EMAIL_FILE_PATH і витягуємо URL скидання."""
+    mail_dir = Path(getattr(settings, 'EMAIL_FILE_PATH', '') or '')
+    if not mail_dir.is_dir():
+        return None
+    files = sorted(mail_dir.glob('*'), key=lambda p: p.stat().st_mtime, reverse=True)
+    for path in files[:5]:
+        try:
+            text = path.read_text(encoding='utf-8', errors='ignore')
+        except OSError:
+            continue
+        match = re.search(r'https?://[^\s]+/accounts/reset/[^\s]+', text)
+        if match:
+            return match.group(0).rstrip('.)>')
+    return None
+
+
+class LocalPasswordResetDoneView(PasswordResetDoneView):
+    """Після запиту показуємо лінк локально (немає реального SMTP)."""
+
+    template_name = 'accounts/password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if settings.DEBUG:
+            ctx['debug_reset_link'] = _latest_password_reset_link()
+        return ctx
+
 
 
 @require_http_methods(['GET', 'POST'])

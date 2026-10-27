@@ -3,11 +3,11 @@
 {% block content %}
 <div class="mb-4">
   <h1 class="page-title">Підказки</h1>
-  <p class="page-subtitle">Прості сигнали за вашими даними — без складного ML</p>
+  <p class="page-subtitle">Короткі поради за вашими витратами й лімітами</p>
 </div>
 <div class="row g-3">
   {% for tip in tips %}
-  <div class="col-md-6">
+  <div class="col-12 col-md-6">
     <div class="card-soft p-3 p-md-4 h-100 fh-insight fh-insight--{{ tip.level }}">
       <h2 class="h5 mb-2">{{ tip.title }}</h2>
       <p class="text-muted-fh mb-3">{{ tip.text }}</p>
@@ -16,6 +16,13 @@
       {% else %}
       <a class="small" href="{% url tip.url_name %}">Відкрити →</a>
       {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="card-soft p-4 fh-empty">
+      <p class="mb-2">Поки немає підказок — додайте кілька транзакцій і бюджетів.</p>
+      <a class="btn btn-sm btn-accent" href="{% url 'budgeting:transaction_create' %}">Додати транзакцію</a>
     </div>
   </div>
   {% endfor %}

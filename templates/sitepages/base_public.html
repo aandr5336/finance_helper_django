@@ -6,7 +6,6 @@
     <nav class="card-soft p-3 fh-side-nav sticky-lg-top" style="top:1rem;">
       <div class="text-muted-fh small text-uppercase mb-2" style="letter-spacing:.06em;">Інформація</div>
       <a class="fh-side-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'sitepages:about' %}">Про нас</a>
-      <a class="fh-side-link {% if request.resolver_match.url_name == 'pricing' %}active{% endif %}" href="{% url 'sitepages:pricing' %}">Тарифи</a>
       <a class="fh-side-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}" href="{% url 'sitepages:faq' %}">FAQ</a>
       <a class="fh-side-link {% if request.resolver_match.url_name == 'changelog' %}active{% endif %}" href="{% url 'sitepages:changelog' %}">Що нового</a>
       <a class="fh-side-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'sitepages:contact' %}">Контакти</a>

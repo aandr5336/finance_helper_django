@@ -20,7 +20,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'budgeting.apps.BudgetingConfig',
     'accounts.apps.AccountsConfig',
     'sitepages.apps.SitepagesConfig',
@@ -34,9 +33,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'accounts.middleware.LastActivityMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index('django.middleware.clickjacking.XFrameOptionsMiddleware') + 1,
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
 
 ROOT_URLCONF = 'budget_project.urls'
 
@@ -68,7 +73,10 @@ DATABASES = {
         'PORT': env('DB_PORT', default='3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'init_command': (
+                "SET sql_mode='STRICT_TRANS_TABLES', "
+                "NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'"
+            ),
         },
     }
 }
@@ -102,4 +110,9 @@ MESSAGE_TAGS = {
     message_constants.ERROR: 'danger',
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Листи зберігаються у файли (локальна розробка). У DEBUG посилання
+# також показується на сторінці після скидання пароля.
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+DEFAULT_FROM_EMAIL = 'noreply@financehelper.local'
+EMAIL_SUBJECT_PREFIX = '[Finance Helper] '

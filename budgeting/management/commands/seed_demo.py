@@ -11,6 +11,13 @@ from budgeting.models import Budget, Category, SavingsGoal, Tag, Transaction
 class Command(BaseCommand):
     help = 'Створює демо-користувачів, категорії, транзакції, бюджети та цілі'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help='Видалити дані demo і наповнити заново (виправляє зіпсовані назви)',
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
         users_group, _ = Group.objects.get_or_create(name='users')
@@ -21,25 +28,41 @@ class Command(BaseCommand):
 
         demo, created = User.objects.get_or_create(
             username='demo',
-            defaults={'email': 'demo@budgetflow.local'},
+            defaults={'email': 'demo@financehelper.local'},
         )
         if created:
             demo.set_password('demo12345')
             demo.save()
+        else:
+            # email потрібен для скидання пароля
+            if demo.email != 'demo@financehelper.local':
+                demo.email = 'demo@financehelper.local'
+                demo.save(update_fields=['email'])
         demo.groups.add(users_group)
 
         analyst, created = User.objects.get_or_create(
             username='analyst',
-            defaults={'email': 'analyst@budgetflow.local', 'is_staff': True},
+            defaults={'email': 'analyst@financehelper.local', 'is_staff': True},
         )
         if created:
             analyst.set_password('analyst12345')
             analyst.save()
         analyst.groups.add(users_group, analysts)
 
-        if Transaction.objects.filter(owner=demo).exists():
-            self.stdout.write(self.style.WARNING('Демо-дані вже є — пропуск наповнення.'))
+        has_data = Transaction.objects.filter(owner=demo).exists()
+        if has_data and not options['force']:
+            self.stdout.write(self.style.WARNING(
+                'Демо-дані вже є — пропуск. Для перезапису: python manage.py seed_demo --force'
+            ))
             return
+
+        if options['force']:
+            Transaction.objects.filter(owner=demo).delete()
+            Budget.objects.filter(owner=demo).delete()
+            SavingsGoal.objects.filter(owner=demo).delete()
+            Tag.objects.filter(owner=demo).delete()
+            Category.objects.filter(owner=demo).delete()
+            self.stdout.write('Старі дані demo видалено.')
 
         cats_data = [
             ('Їжа', 'restaurant', '#FF9800', 'expense'),
@@ -125,5 +148,6 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(self.style.SUCCESS(
-            'Готово. Користувачі: demo / demo12345 та analyst / analyst12345'
+            'Готово. demo / demo12345 (email: demo@financehelper.local); '
+            'analyst / analyst12345'
         ))

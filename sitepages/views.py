@@ -28,11 +28,6 @@ def terms(request):
 
 
 @require_GET
-def pricing(request):
-    return _page(request, 'sitepages/pricing.html', 'Тарифи')
-
-
-@require_GET
 def changelog(request):
     return _page(request, 'sitepages/changelog.html', 'Що нового')
 
@@ -41,6 +36,5 @@ def changelog(request):
 def contact(request):
     sent = False
     if request.method == 'POST':
-        # без зовнішнього email — зберігаємо як повідомлення користувачу
         sent = True
     return _page(request, 'sitepages/contact.html', 'Контакти', contact_sent=sent)

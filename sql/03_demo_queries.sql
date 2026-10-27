@@ -1,5 +1,5 @@
 -- Перевірочні SELECT для скрінів MySQL Workbench (розділ 1.2 / 1.4)
-USE budgetflow_db;
+USE finance_helper_db;
 
 -- 1. Транзакції користувача з назвою категорії
 SELECT t.id, t.occurred_at, c.name AS category, t.tx_type, t.amount, t.note

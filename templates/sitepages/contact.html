@@ -2,7 +2,7 @@
 {% block public_body %}
 <p class="page-subtitle mb-4">Напишіть нам — відповімо в розумні строки</p>
 {% if contact_sent %}
-<div class="alert alert-success">Дякуємо! Повідомлення прийнято (демо-режим без SMTP).</div>
+<div class="alert alert-success">Дякуємо! Повідомлення прийнято.</div>
 {% endif %}
 <form method="post" class="col-lg-8 px-0">
   {% csrf_token %}

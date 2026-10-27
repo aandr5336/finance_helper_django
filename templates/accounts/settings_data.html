@@ -3,30 +3,11 @@
 {% block content %}
 <div class="mb-4">
   <h1 class="page-title">Дані</h1>
-  <p class="page-subtitle">Експорт, імпорт і небезпечна зона</p>
+  <p class="page-subtitle">Керування акаунтом</p>
 </div>
 <div class="row g-4">
   <aside class="col-lg-3">{% include 'accounts/includes/settings_nav.html' %}</aside>
   <div class="col-lg-9">
-    <div class="card-soft p-3 p-md-4 mb-4">
-      <h2 class="h5 mb-3">Експорт CSV</h2>
-      <p class="small text-muted-fh mb-3">Завантажте всі свої транзакції (суми в гривнях).</p>
-      <a class="btn btn-accent" href="{% url 'budgeting:export_csv' %}"><i class="bi bi-download me-1"></i>Завантажити CSV</a>
-    </div>
-    <div class="card-soft p-3 p-md-4 mb-4">
-      <h2 class="h5 mb-3">Імпорт CSV</h2>
-      <p class="small text-muted-fh mb-3">
-        Колонки: <code>date,type,category,amount,note</code> (type = income|expense).
-        Категорія створюється автоматично, якщо її ще немає.
-      </p>
-      <form method="post" action="{% url 'budgeting:import_csv' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-          <input type="file" name="csv_file" accept=".csv,text/csv" class="form-control" required>
-        </div>
-        <button class="btn btn-outline-fh" type="submit">Імпортувати</button>
-      </form>
-    </div>
     <div class="card-soft p-3 p-md-4">
       <h2 class="h5 mb-3 text-danger">Небезпечна зона</h2>
       <button type="button" class="fh-setting-row w-100 text-start border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#deleteModal">

@@ -8,27 +8,28 @@
   <p class="page-subtitle">Зведена статистика по всіх користувачах</p>
 </div>
 <div class="row g-3 mb-4">
-  <div class="col-md-3"><div class="card-soft p-3"><div class="stat-label">Користувачів із транзакціями</div><div class="stat-value">{{ stats.users_with_tx }}</div></div></div>
-  <div class="col-md-3"><div class="card-soft p-3"><div class="stat-label">Усіх транзакцій</div><div class="stat-value">{{ stats.total_transactions }}</div></div></div>
-  <div class="col-md-3"><div class="card-soft p-3"><div class="stat-label">Сума витрат</div><div class="stat-value text-expense">{% uah stats.total_expense %}</div></div></div>
-  <div class="col-md-3"><div class="card-soft p-3"><div class="stat-label">Активні цілі</div><div class="stat-value" style="color:var(--fh-orange-300)">{{ stats.active_goals }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="stat-label">Користувачів із транзакціями</div><div class="stat-value">{{ stats.users_with_tx }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="stat-label">Усіх транзакцій</div><div class="stat-value">{{ stats.total_transactions }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="stat-label">Сума витрат</div><div class="stat-value text-expense">{% uah stats.total_expense %}</div></div></div>
+  <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="stat-label">Активні цілі</div><div class="stat-value" style="color:var(--fh-orange-300)">{{ stats.active_goals }}</div></div></div>
 </div>
 <div class="card-soft p-3 p-md-4">
   <h2 class="h5 mb-3">Останні транзакції всіх користувачів</h2>
-  <div class="table-responsive">
-    <table class="table">
-      <thead><tr><th>Користувач</th><th>Категорія</th><th>Сума</th><th>Дата</th></tr></thead>
-      <tbody>
-      {% for t in latest %}
-        <tr>
-          <td>{{ t.owner.username }}</td>
-          <td>{{ t.category.name }}</td>
-          <td><span class="badge {% if t.tx_type == 'expense' %}badge-expense{% else %}badge-income{% endif %}">{% uah t.amount %}</span></td>
-          <td class="text-muted-fh">{{ t.occurred_at }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+  <div class="fh-list fh-list--compact">
+    {% for t in latest %}
+    <div class="fh-list-item" style="cursor:default;">
+      <span class="fh-list-item__dot" style="background:{{ t.category.color }}"></span>
+      <span class="fh-list-item__main">
+        <span class="fh-list-item__title">{{ t.category.name }}</span>
+        <span class="fh-list-item__meta">{{ t.owner.username }} · {{ t.occurred_at|date:"d.m.Y" }}</span>
+      </span>
+      <span class="fh-list-item__amount {% if t.tx_type == 'expense' %}is-expense{% else %}is-income{% endif %}">
+        {% uah t.amount %}
+      </span>
+    </div>
+    {% empty %}
+    <p class="text-muted-fh mb-0">Поки немає даних.</p>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
