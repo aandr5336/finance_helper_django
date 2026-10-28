@@ -81,15 +81,19 @@
     categories = [];
   }
 
-  // fallback: зчитати з DOM, якщо JSON порожній через старий кеш
+  // fallback: зчитати з DOM, якщо JSON порожній
   if (!categories.length) {
     Array.from(categorySelect.options).forEach(function (opt) {
       if (!opt.value) return;
       categories.push({
-        id: opt.value,
+        id: String(opt.value),
         name: opt.textContent.trim(),
         type: opt.getAttribute('data-type') || '',
       });
+    });
+  } else {
+    categories = categories.map(function (c) {
+      return { id: String(c.id), name: c.name, type: c.type || '' };
     });
   }
 
@@ -98,9 +102,14 @@
 
   function fillCategories(filterType, preferredValue) {
     const current = preferredValue !== undefined ? preferredValue : categorySelect.value;
-    const filtered = filterType
+    let filtered = filterType
       ? categories.filter(function (c) { return c.type === filterType; })
       : categories.slice();
+
+    // якщо для типу нічого немає — показуємо всі, щоб select не був «мертвим»
+    if (filterType && !filtered.length && categories.length) {
+      filtered = categories.slice();
+    }
 
     categorySelect.innerHTML = '';
     const empty = document.createElement('option');
@@ -112,22 +121,24 @@
       const opt = document.createElement('option');
       opt.value = c.id;
       opt.textContent = c.name;
-      opt.setAttribute('data-type', c.type);
+      if (c.type) opt.setAttribute('data-type', c.type);
       categorySelect.appendChild(opt);
     });
+
+    categorySelect.disabled = !filtered.length;
 
     const exists = filtered.some(function (c) { return c.id === String(current); });
     categorySelect.value = exists ? String(current) : '';
 
     if (hint) {
       if (!categories.length) {
-        hint.textContent = 'Немає активних категорій. Спочатку створіть їх у розділі «Категорії».';
-      } else if (filterType && !filtered.length) {
-        hint.textContent = 'Немає категорій цього типу. Створіть категорію або оберіть інший тип.';
+        hint.innerHTML = 'Немає активних категорій. <a href="/categories/add/">Створіть першу</a>.';
+      } else if (filterType && !categories.some(function (c) { return c.type === filterType; })) {
+        hint.textContent = 'Для цього типу ще немає категорій — показано всі. Додайте потрібну в «Категорії».';
       } else {
         hint.textContent = filterType
           ? ('Показано категорії: ' + (filterType === 'income' ? 'дохід' : 'витрата'))
-          : 'Показано всі категорії';
+          : 'Оберіть категорію зі списку';
       }
     }
   }

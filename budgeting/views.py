@@ -221,6 +221,9 @@ class CategoryListView(LoginRequiredMixin, ListView):
     context_object_name = 'categories'
 
     def get_queryset(self):
+        from .defaults import ensure_default_categories
+
+        ensure_default_categories(self.request.user)
         return Category.objects.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):

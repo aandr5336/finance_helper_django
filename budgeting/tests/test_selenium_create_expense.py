@@ -1,5 +1,7 @@
 """TC_FH_02 — створення витрати (Selenium)."""
 
+from time import sleep
+
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
@@ -35,11 +37,14 @@ class CreateExpenseSeleniumTest(StaticLiveServerTestCase):
 
         d = self.driver
         d.get(f'{self.live_server_url}/transactions/add/')
-        Select(d.find_element(By.NAME, 'tx_type')).select_by_value('expense')
+        tx_type = d.find_element(By.NAME, 'tx_type')
+        Select(tx_type).select_by_value('expense')
         d.execute_script(
             "arguments[0].dispatchEvent(new Event('change', {bubbles:true}))",
-            d.find_element(By.NAME, 'tx_type'),
+            tx_type,
         )
+        # дати JS перебудувати <option> за типом
+        sleep(0.3)
         Select(d.find_element(By.NAME, 'category')).select_by_value(str(cat.pk))
         d.find_element(By.NAME, 'amount').send_keys('50')
         d.find_element(By.NAME, 'note').send_keys('test')

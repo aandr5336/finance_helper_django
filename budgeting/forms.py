@@ -4,6 +4,7 @@ from django import forms
 from django.forms.models import ModelChoiceIteratorValue
 
 from .currency import CURRENCY_SYMBOLS, convert_from_uah, convert_to_uah
+from .defaults import ensure_default_categories
 from .models import Budget, Category, SavingsGoal, Tag, Transaction
 from .validators import validate_positive_amount
 
@@ -92,16 +93,15 @@ class TransactionForm(CurrencyAwareAmountMixin, forms.ModelForm):
     def __init__(self, *args, user=None, currency='UAH', **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
-        self.fields['tx_type'].choices = [
-            ('', '— оберіть тип —'),
-            *Transaction.TxType.choices,
-        ]
+        self.fields['tx_type'].choices = list(Transaction.TxType.choices)
         if not (self.instance and self.instance.pk) and not self.is_bound:
-            self.fields['tx_type'].initial = ''
+            # одразу «витрата» — інакше JS-фільтр лишає користувача без зрозумілого списку
+            self.fields['tx_type'].initial = Transaction.TxType.EXPENSE
 
         category_qs = Category.objects.none()
         tag_qs = Tag.objects.none()
         if user is not None:
+            ensure_default_categories(user)
             category_qs = Category.objects.filter(owner=user, is_active=True).order_by(
                 'category_type', 'name'
             )
@@ -243,11 +243,13 @@ class BudgetForm(CurrencyAwareAmountMixin, forms.ModelForm):
     def __init__(self, *args, user=None, currency='UAH', **kwargs):
         super().__init__(*args, **kwargs)
         if user is not None:
+            ensure_default_categories(user)
             self.fields['category'].queryset = Category.objects.filter(
                 owner=user,
                 category_type=Category.CategoryType.EXPENSE,
                 is_active=True,
             )
+        self.fields['category'].empty_label = '— оберіть категорію —'
         self.fields['amount'].validators.append(validate_positive_amount)
         self.fields['month'].required = False
         self.fields['month'].input_formats = _HTML5_DATE_FORMATS
